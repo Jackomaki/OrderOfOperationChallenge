@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order of Operations Card Game challenge - Primary 5 & PvP Edition</title>
+  <title>Order of Operations Challenge - Primary 5 & PvP Edition</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -101,7 +101,7 @@
 <body class="flex flex-col min-h-screen text-slate-900">
 
   <!-- Header -->
-<header class="w-full glass-panel sticky top-0 z-40 border-b border-slate-300">
+  <header class="w-full glass-panel sticky top-0 z-40 border-b border-slate-300">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-500/20 p-1.5">
@@ -120,7 +120,6 @@
           <p class="text-xs text-slate-500">Target Operations & Player vs Player Battles</p>
         </div>
       </div>
-
 
       <!-- Header Timer, Room Badge & Mode Controls -->
       <div class="flex items-center gap-3 text-sm flex-wrap">
@@ -206,7 +205,18 @@
         </span>
       </div>
       <div id="rule-description" class="text-xs text-slate-600 font-medium">
-        Combine 4 numbers using (+, -, ×, ÷) to reach <span class="font-bold text-amber-700">24</span>!
+        Combine 4 numbers using (+, -, &times;, &divide;) to reach <span class="font-bold text-amber-700">24</span>!
+      </div>
+    </div>
+
+    <!-- Scoring Rules & Point System Guide Bar -->
+    <div class="glass-panel p-3.5 rounded-2xl border border-slate-300 bg-slate-50/90 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2 font-bold text-slate-700 uppercase tracking-wider text-[11px]">
+        <i class="fa-solid fa-trophy text-amber-500 text-sm"></i>
+        <span>Scoring System:</span>
+      </div>
+      <div id="scoring-legend-items" class="flex items-center gap-4 flex-wrap text-slate-700 font-medium text-[11px]">
+        <!-- Dynamic scoring legend items injected via JS -->
       </div>
     </div>
 
@@ -255,9 +265,9 @@
       <!-- Math Operator Buttons -->
       <div class="grid grid-cols-6 gap-2">
         <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="+">+</button>
-        <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="-">−</button>
-        <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="*">×</button>
-        <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="/">÷</button>
+        <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="-">&minus;</button>
+        <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="*">&times;</button>
+        <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="/">&divide;</button>
         <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op="(">(</button>
         <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op=")">)</button>
       </div>
@@ -289,9 +299,9 @@
         </div>
         <div class="grid grid-cols-6 gap-1.5">
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="+">+</button>
-          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="-">−</button>
-          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="*">×</button>
-          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="/">÷</button>
+          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="-">&minus;</button>
+          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="*">&times;</button>
+          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="/">&divide;</button>
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="(">(</button>
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op=")">)</button>
         </div>
@@ -320,9 +330,9 @@
         </div>
         <div class="grid grid-cols-6 gap-1.5">
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="+">+</button>
-          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="-">−</button>
-          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="*">×</button>
-          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="/">÷</button>
+          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="-">&minus;</button>
+          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="*">&times;</button>
+          <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="/">&divide;</button>
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="(">(</button>
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op=")">)</button>
         </div>
@@ -450,7 +460,7 @@
       <!-- Target Number Setting -->
       <div class="space-y-2">
         <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Target Number</label>
-        <input id="setting-target" type="number" value="24" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-bold text-amber-800">
+        <input id="setting-target" type="number" value="24" min="1" max="999" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm font-bold text-amber-800 focus:outline-none focus:border-indigo-500">
       </div>
 
       <button id="btn-save-settings" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/20">
@@ -525,13 +535,6 @@
       timerInterval: null
     };
 
-    const SUITS = [
-      { name: 'hearts', icon: '♥', color: 'text-rose-600' },
-      { name: 'diamonds', icon: '♦', color: 'text-rose-600' },
-      { name: 'clubs', icon: '♣', color: 'text-slate-800' },
-      { name: 'spades', icon: '♠', color: 'text-slate-800' }
-    ];
-
     let elements = {};
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -561,7 +564,8 @@
         displayRoomCode: document.getElementById('display-room-code'),
         onlineRoomBanner: document.getElementById('online-room-banner'),
         playerRoleIndicator: document.getElementById('player-role-indicator'),
-        inputRoomCode: document.getElementById('input-room-code')
+        inputRoomCode: document.getElementById('input-room-code'),
+        scoringLegendItems: document.getElementById('scoring-legend-items')
       };
 
       startTimer();
@@ -583,8 +587,6 @@
     function dealNewCards() {
       clearAllWorkspaces();
 
-      if (state.isOnline && state.playerRole === 2) return;
-      
       let generated = [];
       let isSolvable = false;
       let attempts = 0;
@@ -594,8 +596,7 @@
         generated = [];
         for (let i = 0; i < 4; i++) {
           const val = Math.floor(Math.random() * 10) + 1;
-          const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
-          generated.push({ id: `card-${i}-${Date.now()}`, value: val, suit });
+          generated.push({ id: `card-${i}-${Date.now()}`, value: val });
         }
 
         const solutions = solve24(generated.map(c => c.value), state.targetNumber);
@@ -605,8 +606,15 @@
       state.cards = generated;
       renderCards();
 
-      if (state.isOnline && db && state.roomCode && state.playerRole === 1) {
-        syncRoomToCloud({ cards: state.cards, scoreP1: state.scoreP1, scoreP2: state.scoreP2 });
+      if (state.isOnline && db && state.roomCode) {
+        syncRoomToCloud({ 
+          cards: state.cards, 
+          scoreP1: state.scoreP1, 
+          scoreP2: state.scoreP2,
+          targetNumber: state.targetNumber,
+          mode: state.mode,
+          matchFormat: state.matchFormat
+        });
       }
     }
 
@@ -630,22 +638,14 @@
       state.cards.forEach(card => {
         const isUsedSingle = state.selectedCardIds.includes(card.id);
         const cardEl = document.createElement('div');
-        cardEl.className = `playing-card border-2 border-slate-700/80 bg-slate-900 rounded-2xl p-4 flex flex-col justify-between aspect-[3/4] shadow-xl ${isUsedSingle ? 'used' : ''}`;
+        cardEl.className = `playing-card border-2 border-indigo-200 bg-white rounded-2xl p-4 flex items-center justify-center aspect-[3/4] shadow-xl ${isUsedSingle ? 'used' : ''}`;
         cardEl.dataset.id = card.id;
 
         const valDisplay = card.value === 1 ? 'A' : card.value;
 
         cardEl.innerHTML = `
-          <div class="flex justify-between items-center text-lg sm:text-2xl font-black ${card.suit.color}">
-            <span>${valDisplay}</span>
-            <span>${card.suit.icon}</span>
-          </div>
-          <div class="text-center text-5xl sm:text-6xl font-extrabold ${card.suit.color} my-2">
-            ${card.suit.icon}
-          </div>
-          <div class="flex justify-between items-center text-lg sm:text-2xl font-black ${card.suit.color} rotate-180">
-            <span>${valDisplay}</span>
-            <span>${card.suit.icon}</span>
+          <div class="text-center font-extrabold text-indigo-900 text-5xl sm:text-6xl">
+            ${valDisplay}
           </div>
         `;
 
@@ -654,8 +654,6 @@
             if (state.isOnline) {
               addCardToPlayer(state.playerRole, card);
             } else {
-              // In local 1v1 mode, main cards display acts as an informative viewer,
-              // or default routes to P1 if unassigned.
               showFeedback('In Local 1v1, use the card buttons inside Player 1 or Player 2 workspace!', 'info');
             }
           } else {
@@ -684,21 +682,21 @@
 
         // P1 Quick Card Button
         const btnP1 = document.createElement('button');
-        btnP1.className = `py-1.5 px-1 text-xs font-black rounded-lg border transition-all flex items-center justify-center gap-1 ${
+        btnP1.className = `py-2 px-1 text-sm font-black rounded-lg border transition-all flex items-center justify-center ${
           isP1Used ? 'bg-rose-200 text-rose-400 border-rose-300 opacity-50 cursor-not-allowed' : 'bg-white text-rose-800 border-rose-300 hover:bg-rose-100 shadow-sm'
         }`;
         btnP1.disabled = isP1Used;
-        btnP1.innerHTML = `<span>${valDisplay}</span><span class="${card.suit.color}">${card.suit.icon}</span>`;
+        btnP1.innerHTML = `<span>${valDisplay}</span>`;
         btnP1.addEventListener('click', () => addCardToPlayer(1, card));
         p1Box.appendChild(btnP1);
 
         // P2 Quick Card Button
         const btnP2 = document.createElement('button');
-        btnP2.className = `py-1.5 px-1 text-xs font-black rounded-lg border transition-all flex items-center justify-center gap-1 ${
+        btnP2.className = `py-2 px-1 text-sm font-black rounded-lg border transition-all flex items-center justify-center ${
           isP2Used ? 'bg-blue-200 text-blue-400 border-blue-300 opacity-50 cursor-not-allowed' : 'bg-white text-blue-800 border-blue-300 hover:bg-blue-100 shadow-sm'
         }`;
         btnP2.disabled = isP2Used;
-        btnP2.innerHTML = `<span>${valDisplay}</span><span class="${card.suit.color}">${card.suit.icon}</span>`;
+        btnP2.innerHTML = `<span>${valDisplay}</span>`;
         btnP2.addEventListener('click', () => addCardToPlayer(2, card));
         p2Box.appendChild(btnP2);
       });
@@ -751,13 +749,15 @@
 
     function addOperator(op, playerNum = null) {
       const activeP = playerNum || state.playerRole;
+      const opDisplay = op === '*' ? '\u00D7' : op === '/' ? '\u00F7' : op === '-' ? '\u2212' : op;
+
       if (state.matchFormat === 'simultaneous' && activeP) {
         if (state.isOnline && activeP !== state.playerRole) return;
         const tokensArr = activeP === 1 ? state.p1Tokens : state.p2Tokens;
-        tokensArr.push({ type: 'operator', value: op, display: op === '*' ? '×' : op === '/' ? '÷' : op });
+        tokensArr.push({ type: 'operator', value: op, display: opDisplay });
         updateSimultaneousDisplay(activeP);
       } else {
-        state.expressionTokens.push({ type: 'operator', value: op, display: op === '*' ? '×' : op === '/' ? '÷' : op });
+        state.expressionTokens.push({ type: 'operator', value: op, display: opDisplay });
         updateExpressionDisplay();
       }
     }
@@ -830,52 +830,50 @@
           return;
         }
 
-        if (state.mode === 'p5-fraction') {
-          const hasFractionOrDecimal = tokens.some(t => t.value === '/' || t.value === '.');
-          if (!hasFractionOrDecimal) {
-            showFeedback('P5 Rule: Must include at least one fraction or decimal step (÷ or .)!', 'warning');
-            return;
-          }
-        }
-
         if (Math.abs(evaluatedResult - state.targetNumber) < 0.0001) {
-          triggerSuccess(playerNum);
+          // Check if Primary 5 Fraction/Decimal rule was followed
+          if (state.mode === 'p5-fraction') {
+            const hasFractionOrDecimal = tokens.some(t => t.value === '/' || t.value === '.');
+            if (!hasFractionOrDecimal) {
+              // Award partial points (50 pts) for whole number solution and allow try again for full points
+              triggerPartialSuccess(playerNum, 50, '💡 Solved! (+50 pts) Tip: Use a fraction (\u00F7) or decimal next time to get full 100 pts!');
+              return;
+            }
+          }
+
+          // Full success (100 pts)
+          triggerSuccess(playerNum, 100);
         } else {
-          showFeedback(`Equals ${Number(evaluatedResult.toFixed(2))}, target is ${state.targetNumber}.`, 'error');
-          const penaltyPlayer = playerNum || state.playerRole;
-          if (penaltyPlayer) adjustScore(penaltyPlayer, -30);
+          adjustScore(playerNum || state.playerRole, -30);
+          showFeedback(`Equals ${evaluatedResult}, expected ${state.targetNumber}. (-30 pts)`, 'error');
         }
-      } catch (err) {
-        showFeedback('Syntax error in expression! Check parentheses.', 'error');
+      } catch (e) {
+        showFeedback('Invalid equation syntax!', 'error');
       }
     }
 
-    function triggerSuccess(playerNum = null) {
+    function triggerPartialSuccess(playerNum, points, customMsg) {
       const winner = playerNum || state.playerRole;
-      adjustScore(winner, 100);
-
-      const msg = state.matchFormat !== 'single'
-        ? `🎉 Player ${winner} Wins The Round! (+100 pts)`
-        : `🎉 Excellent! Target ${state.targetNumber} Achieved!`;
-
-      showFeedback(msg, 'success');
-      if (typeof confetti === 'function') {
-        confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
-      }
-
-      if (state.isOnline && db && state.roomCode) {
-        syncRoomToCloud({ winnerRound: winner, scoreP1: state.scoreP1, scoreP2: state.scoreP2 });
-      }
-
-      setTimeout(() => { dealNewCards(); }, 2200);
+      adjustScore(winner, points);
+      showFeedback(customMsg, 'warning');
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
     }
 
-    // --- Online Room Cloud Logic ---
-    async function createOnlineRoom() {
-      const btnHost = document.getElementById('btn-create-room');
-      if (btnHost) btnHost.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Creating Room...`;
+    function triggerSuccess(playerNum, points) {
+      const winner = playerNum || state.playerRole;
+      adjustScore(winner, points);
+      showFeedback(`🎉 Bingo! Player ${winner} solved ${state.targetNumber}! (+${points} pts)`, 'success');
+      confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+      setTimeout(() => {
+        dealNewCards();
+      }, 1800);
+    }
 
+    async function createOnlineRoom() {
       const code = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const btnHost = document.getElementById('btn-create-room');
+      if (btnHost) btnHost.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Hosting...`;
+
       state.roomCode = code;
       state.playerRole = 1;
       state.isOnline = true;
@@ -884,19 +882,18 @@
         const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
         try {
           await setDoc(roomRef, {
-            roomCode: code,
+            code,
             cards: state.cards,
             scoreP1: state.scoreP1,
             scoreP2: state.scoreP2,
-            matchFormat: state.matchFormat,
-            mode: state.mode,
             targetNumber: state.targetNumber,
-            activeBuzzerPlayer: null,
-            createdAt: Date.now()
+            mode: state.mode,
+            matchFormat: state.matchFormat,
+            createdAt: new Date().toISOString()
           });
           listenToOnlineRoom(code);
         } catch (err) {
-          console.warn("Could not sync room to cloud database, running local session:", err);
+          console.warn("Could not write cloud room data:", err);
         }
       }
 
@@ -947,11 +944,36 @@
         if (!snapshot.exists()) return;
         const data = snapshot.data();
 
+        // Sync Cards across both devices
         if (data.cards && JSON.stringify(data.cards) !== JSON.stringify(state.cards)) {
           state.cards = data.cards;
           renderCards();
         }
 
+        // Sync Target Number & Game Mode across both devices
+        if (data.targetNumber && data.targetNumber !== state.targetNumber) {
+          state.targetNumber = data.targetNumber;
+          if (elements.settingTarget) elements.settingTarget.value = state.targetNumber;
+        }
+        if (data.mode && data.mode !== state.mode) {
+          state.mode = data.mode;
+        }
+        if (data.matchFormat && data.matchFormat !== state.matchFormat) {
+          state.matchFormat = data.matchFormat;
+        }
+
+        // Apply updated rules to UI
+        if (state.mode === 'p5-fraction') {
+          elements.badgeMode.textContent = 'P5 Fraction/Decimal Twist';
+          elements.ruleDescription.innerHTML = `Combine cards to reach <span class="font-bold text-amber-700">${state.targetNumber}</span> using at least <span class="font-bold text-indigo-700">1 division (fraction) or decimal</span>!`;
+        } else {
+          elements.badgeMode.textContent = 'Standard Mode';
+          elements.ruleDescription.innerHTML = `Combine 4 numbers using (+, -, ×, ÷) to reach <span class="font-bold text-amber-700">${state.targetNumber}</span>!`;
+        }
+
+        renderScoringLegend();
+
+        // Sync Scores across both devices
         if (typeof data.scoreP1 === 'number') {
           state.scoreP1 = data.scoreP1;
           if (elements.p1Score) elements.p1Score.textContent = `${state.scoreP1} pts`;
@@ -1031,7 +1053,7 @@
                 try {
                   const val = Function(`"use strict"; return (${expr})`)();
                   if (Math.abs(val - target) < 0.00001) {
-                    let formatted = expr.replace(/\*/g, '×').replace(/\//g, '÷');
+                    let formatted = expr.replace(/\*/g, '\u00D7').replace(/\//g, '\u00F7').replace(/-/g, '\u2212');
                     results.add(formatted);
                   }
                 } catch (e) {}
@@ -1076,8 +1098,7 @@
         }
         state.cards = nums.map((v, i) => ({
           id: `custom-${i}-${Date.now()}`,
-          value: v,
-          suit: SUITS[i % SUITS.length]
+          value: v
         }));
         dealNewCards();
       });
@@ -1139,7 +1160,34 @@
         elements.ruleDescription.innerHTML = `Combine 4 numbers using (+, -, ×, ÷) to reach <span class="font-bold text-amber-700">${state.targetNumber}</span>!`;
       }
 
+      renderScoringLegend();
       dealNewCards();
+
+      if (state.isOnline && db && state.roomCode) {
+        syncRoomToCloud({
+          targetNumber: state.targetNumber,
+          mode: state.mode,
+          matchFormat: state.matchFormat,
+          cards: state.cards
+        });
+      }
+    }
+
+    function renderScoringLegend() {
+      if (!elements.scoringLegendItems) return;
+
+      if (state.mode === 'p5-fraction') {
+        elements.scoringLegendItems.innerHTML = `
+          <span class="flex items-center gap-1.5"><span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">+100 pts</span> Fraction / Decimal Solution</span>
+          <span class="flex items-center gap-1.5"><span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-300 font-bold">+50 pts</span> Whole Number Solution</span>
+          <span class="flex items-center gap-1.5"><span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-300 font-bold">-30 pts</span> Incorrect Target</span>
+        `;
+      } else {
+        elements.scoringLegendItems.innerHTML = `
+          <span class="flex items-center gap-1.5"><span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold">+100 pts</span> Reached Target (${state.targetNumber})</span>
+          <span class="flex items-center gap-1.5"><span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-300 font-bold">-30 pts</span> Incorrect Target</span>
+        `;
+      }
     }
 
     function showFeedback(text, type = 'info') {
