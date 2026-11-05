@@ -1,9 +1,9 @@
-<Order of Operations Challenge html>
+<Order of Operations challenge html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order of Operations Challenge - Primary 5 & PvP Edition</title>
+  <title> Order of Operations Challenge Primary 5 & PvP Edition</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -957,9 +957,26 @@
         }
         if (data.mode && data.mode !== state.mode) {
           state.mode = data.mode;
+          const radioMode = document.querySelector(`input[name="game-mode"][value="${state.mode}"]`);
+          if (radioMode) radioMode.checked = true;
         }
         if (data.matchFormat && data.matchFormat !== state.matchFormat) {
           state.matchFormat = data.matchFormat;
+          const radioFormat = document.querySelector(`input[name="match-format"][value="${state.matchFormat}"]`);
+          if (radioFormat) radioFormat.checked = true;
+        }
+
+        // Apply updated layout & workspace based on format
+        if (state.matchFormat === 'simultaneous') {
+          elements.singleWorkspace.classList.add('hidden');
+          elements.simultaneousWorkspace.classList.remove('hidden');
+          elements.pvpScoreboard.classList.remove('hidden');
+          elements.badgePvp.textContent = state.isOnline ? `Online 1v1 (You are P${state.playerRole})` : 'Simultaneous 1v1 Race';
+        } else {
+          elements.singleWorkspace.classList.remove('hidden');
+          elements.simultaneousWorkspace.classList.add('hidden');
+          elements.pvpScoreboard.classList.add('hidden');
+          elements.badgePvp.textContent = 'Single Player Practice';
         }
 
         // Apply updated rules to UI
@@ -1161,14 +1178,15 @@
       }
 
       renderScoringLegend();
-      dealNewCards();
 
-      if (state.isOnline && db && state.roomCode) {
+      // Only deal new cards if non-online or initiating local change
+      if (!state.isOnline) {
+        dealNewCards();
+      } else if (db && state.roomCode) {
         syncRoomToCloud({
           targetNumber: state.targetNumber,
           mode: state.mode,
-          matchFormat: state.matchFormat,
-          cards: state.cards
+          matchFormat: state.matchFormat
         });
       }
     }
