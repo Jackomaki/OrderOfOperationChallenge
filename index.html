@@ -22,15 +22,67 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at 50% 10%, #f8fafc 0%, #e2e8f0 70%, #cbd5e1 100%);
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f5f3ff 100%);
       color: #0f172a;
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
+
+    /* Interactive Floating Math Particles & Soft Blueprint Grid */
+    .cutesy-math-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: 
+        radial-gradient(circle at 25px 25px, rgba(99, 102, 241, 0.08) 2px, transparent 0),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg font-family='Arial' font-size='22' font-weight='bold' opacity='0.25'%3E%3Ccircle cx='30' cy='35' r='18' fill='%3A818cf8' opacity='0.15'/%3E%3Ctext x='24' y='42' fill='%3A4f46e5'%3E%2B%3C/text%3E%3Ccircle cx='130' cy='45' r='18' fill='%3Af472b6' opacity='0.15'/%3E%3Ctext x='124' y='52' fill='%3Adb2777'%3E%C3%97%3C/text%3E%3Ccircle cx='40' cy='125' r='18' fill='%3A34d399' opacity='0.15'/%3E%3Ctext x='34' y='132' fill='%3A059669'%3E%C3%B7%3C/text%3E%3Ccircle cx='120' cy='115' r='18' fill='%3Afbbf24' opacity='0.15'/%3E%3Ctext x='114' y='122' fill='%3Ad97706'%3E%E2%88%92%3C/text%3E%3C/g%3E%3C/svg%3E");
+      background-size: 50px 50px, 160px 160px;
+      animation: floatBg 35s linear infinite;
+    }
+
+    @keyframes floatBg {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 50px 50px, 160px 160px; }
+    }
+
+    /* Ambient Decorative Floating Glow Blobs */
+    .glow-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+      animation: blobFloat 12s ease-in-out infinite alternate;
+    }
+    .blob-1 {
+      top: -10%;
+      left: 10%;
+      width: 350px;
+      height: 350px;
+      background: #c084fc;
+    }
+    .blob-2 {
+      bottom: -10%;
+      right: 10%;
+      width: 400px;
+      height: 400px;
+      background: #60a5fa;
+    }
+
+    @keyframes blobFloat {
+      0% { transform: translate(0px, 0px) scale(1); }
+      50% { transform: translate(30px, -20px) scale(1.08); }
+      100% { transform: translate(-20px, 30px) scale(0.95); }
+    }
+
     .mono {
       font-family: 'Fira Code', monospace;
     }
     .glass-panel {
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(203, 213, 225, 0.8);
@@ -90,7 +142,11 @@
     #cards-container { display: grid; min-height: 180px; }
   </style>
 </head>
-<body class="flex flex-col min-h-screen text-slate-900">
+<body class="flex flex-col min-h-screen text-slate-900 relative">
+  <!-- Cutesy Floating Math Symbols & Ambient Glow Blobs Layer -->
+  <div class="cutesy-math-bg"></div>
+  <div class="glow-blob blob-1"></div>
+  <div class="glow-blob blob-2"></div>
 
   <!-- Header -->
   <header class="w-full glass-panel sticky top-0 z-40 border-b border-slate-300">
@@ -133,8 +189,37 @@
     </div>
   </header>
 
+  <!-- Collapsible PEMDAS / Order of Operations Hint Bar -->
+  <div class="max-w-6xl w-full mx-auto px-4 mt-3">
+    <div class="glass-panel rounded-2xl border border-indigo-200 bg-indigo-50/80 transition-all overflow-hidden">
+      <!-- Toggle Header Button -->
+      <button onclick="togglePemdasHint()" class="w-full px-3.5 py-2 flex items-center justify-between text-xs font-bold text-indigo-900 hover:bg-indigo-100/50 transition-colors">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb text-amber-500 text-sm"></i>
+          <span>Order of Operations Hint (BODMAS / PEMDAS)</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-indigo-600 text-[11px] font-medium">
+          <span id="pemdas-hint-label">Show Hint</span>
+          <i id="pemdas-hint-chevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+        </div>
+      </button>
+
+      <!-- Collapsible Rule Details Body -->
+      <div id="pemdas-hint-body" class="hidden px-3.5 pb-3 pt-1 border-t border-indigo-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-1.5 text-[11px] font-semibold flex-wrap">
+          <span class="px-2 py-0.5 rounded-lg bg-purple-200 text-purple-900 border border-purple-300">( ) Brackets First</span>
+          <i class="fa-solid fa-arrow-right text-indigo-400 text-[10px]"></i>
+          <span class="px-2 py-0.5 rounded-lg bg-blue-200 text-blue-900 border border-blue-300">&times; / &divide; Multiply & Divide</span>
+          <i class="fa-solid fa-arrow-right text-indigo-400 text-[10px]"></i>
+          <span class="px-2 py-0.5 rounded-lg bg-emerald-200 text-emerald-900 border border-emerald-300">+ / &minus; Add & Subtract</span>
+        </div>
+        <span class="text-[10px] italic text-indigo-700">Evaluate from left to right for equal precedence operators!</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Online Room Banner with Leave Room -->
-  <div id="online-room-banner" class="hidden max-w-6xl w-full mx-auto px-4 mt-3">
+  <div id="online-room-banner" class="hidden max-w-6xl w-full mx-auto px-4 mt-3 z-10">
     <div class="glass-panel p-3 rounded-2xl border border-emerald-300 bg-emerald-50/90 flex flex-wrap items-center justify-between gap-3 text-xs">
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
@@ -149,7 +234,7 @@
     </div>
   </div>
 
-  <!-- Custom Cards Practice Bar (Moved up right below Online Room Banner) -->
+  <!-- Custom Cards Practice Bar -->
   <div class="max-w-6xl w-full mx-auto px-4 mt-3">
     <div class="glass-panel p-4 rounded-2xl border border-slate-300 bg-white/90 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2">
@@ -329,160 +414,6 @@
     <div id="feedback-message" class="hidden p-3.5 rounded-2xl text-sm font-semibold text-center transition-all duration-300"></div>
 
   </main>
-
-  <!-- Complete Standalone Game Script -->
-  <script>
-    // Game Core State
-    const state = {
-      cards: [6, 4, 3, 2],
-      usedCards: [],
-      p1UsedCards: [],
-      p2UsedCards: [],
-      expression: [],
-      p1Expression: [],
-      p2Expression: [],
-      scores: { p1: 0, p2: 0 },
-      target: 24
-    };
-
-    // Card Generation Logic
-    function generateSolvableCards() {
-      const sampleSets = [
-        [6, 4, 3, 2],
-        [8, 3, 3, 1],
-        [7, 5, 2, 1],
-        [9, 4, 2, 1],
-        [5, 5, 5, 1],
-        [8, 8, 4, 1]
-      ];
-      const randomSet = sampleSets[Math.floor(Math.random() * sampleSets.length)];
-      state.cards = [...randomSet];
-      resetWorkspaces();
-      renderCards();
-    }
-
-    function renderCards() {
-      const container = document.getElementById('cards-container');
-      const p1Buttons = document.getElementById('p1-card-buttons');
-      const p2Buttons = document.getElementById('p2-card-buttons');
-
-      if (!container) return;
-
-      container.innerHTML = state.cards.map((val, idx) => `
-        <div onclick="selectCard(${idx})" class="playing-card h-36 rounded-2xl flex flex-col items-center justify-center border-2 cursor-pointer ${state.usedCards.includes(idx) ? 'used' : ''}">
-          <span class="text-4xl font-black">${val}</span>
-        </div>
-      `).join('');
-
-      if (p1Buttons) {
-        p1Buttons.innerHTML = state.cards.map((val, idx) => `
-          <button onclick="selectPvPCard(1, ${idx})" class="py-2 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-sm border border-rose-300 ${state.p1UsedCards.includes(idx) ? 'opacity-40 pointer-events-none' : ''}">${val}</button>
-        `).join('');
-      }
-
-      if (p2Buttons) {
-        p2Buttons.innerHTML = state.cards.map((val, idx) => `
-          <button onclick="selectPvPCard(2, ${idx})" class="py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-sm border border-blue-300 ${state.p2UsedCards.includes(idx) ? 'opacity-40 pointer-events-none' : ''}">${val}</button>
-        `).join('');
-      }
-    }
-
-    function selectCard(index) {
-      if (state.usedCards.includes(index)) return;
-      state.usedCards.push(index);
-      state.expression.push(state.cards[index]);
-      updateDisplay();
-      renderCards();
-    }
-
-    function selectPvPCard(player, index) {
-      if (player === 1) {
-        if (state.p1UsedCards.includes(index)) return;
-        state.p1UsedCards.push(index);
-        state.p1Expression.push(state.cards[index]);
-      } else {
-        if (state.p2UsedCards.includes(index)) return;
-        state.p2UsedCards.push(index);
-        state.p2Expression.push(state.cards[index]);
-      }
-      updateDisplay();
-      renderCards();
-    }
-
-    function updateDisplay() {
-      const expElem = document.getElementById('expression-display');
-      const exp1Elem = document.getElementById('expression-display-p1');
-      const exp2Elem = document.getElementById('expression-display-p2');
-
-      if (expElem) expElem.textContent = state.expression.join(' ') || 'Select card & operation to build equation...';
-      if (exp1Elem) exp1Elem.textContent = state.p1Expression.join(' ') || 'Build P1 equation...';
-      if (exp2Elem) exp2Elem.textContent = state.p2Expression.join(' ') || 'Build P2 equation...';
-    }
-
-    function resetWorkspaces() {
-      state.usedCards = [];
-      state.p1UsedCards = [];
-      state.p2UsedCards = [];
-      state.expression = [];
-      state.p1Expression = [];
-      state.p2Expression = [];
-      updateDisplay();
-    }
-
-    // --- Math Solver Engine ---
-    function solve24(numbers, target = 24) {
-      const results = new Set();
-      const ops = ['+', '-', '*', '/'];
-      // Solver helper function
-      return results;
-    }
-
-    // Setup Listeners on Load
-    window.onload = function() {
-      renderCards();
-
-      document.getElementById('btn-new-deal')?.addEventListener('click', generateSolvableCards);
-
-      document.getElementById('btn-clear')?.addEventListener('click', () => {
-        state.usedCards = [];
-        state.expression = [];
-        updateDisplay();
-        renderCards();
-      });
-
-      document.getElementById('btn-clear-p1')?.addEventListener('click', () => {
-        state.p1UsedCards = [];
-        state.p1Expression = [];
-        updateDisplay();
-        renderCards();
-      });
-
-      document.getElementById('btn-clear-p2')?.addEventListener('click', () => {
-        state.p2UsedCards = [];
-        state.p2Expression = [];
-        updateDisplay();
-        renderCards();
-      });
-
-      // Operator button handlers
-      document.querySelectorAll('.op-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          state.expression.push(e.target.dataset.op);
-          updateDisplay();
-        });
-      });
-
-      document.querySelectorAll('.op-btn-pvp').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const p = e.target.dataset.p;
-          const op = e.target.dataset.op;
-          if (p === "1") state.p1Expression.push(op);
-          else state.p2Expression.push(op);
-          updateDisplay();
-        });
-      });
-    };
-  </script>
 </body>
 </html>
 
@@ -952,6 +883,25 @@ const firebaseConfig = {
 
   window.closeVictoryModal = function() {
     document.getElementById('game-over-modal')?.classList.add('hidden');
+  };
+
+  // Toggle Collapsible Order of Operations Hint (Exported to Window)
+  window.togglePemdasHint = function() {
+    const body = document.getElementById('pemdas-hint-body');
+    const label = document.getElementById('pemdas-hint-label');
+    const chevron = document.getElementById('pemdas-hint-chevron');
+    if (!body) return;
+
+    const isHidden = body.classList.contains('hidden');
+    if (isHidden) {
+      body.classList.remove('hidden');
+      if (label) label.textContent = 'Hide Hint';
+      if (chevron) chevron.style.transform = 'rotate(180deg)';
+    } else {
+      body.classList.add('hidden');
+      if (label) label.textContent = 'Show Hint';
+      if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
   };
 
   // Card Rendering Engine
