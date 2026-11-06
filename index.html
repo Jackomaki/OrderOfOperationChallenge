@@ -378,26 +378,28 @@
         Play against a friend on a separate device! Host a room or join with a 4-digit code.
       </p>
 
-      <!-- Option A: Host a room -->
+<!-- Option A: Host a room -->
       <div class="p-4 rounded-2xl bg-slate-50 border border-emerald-300 space-y-3">
         <div class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
           <i class="fa-solid fa-crown text-amber-500"></i> Option A: Create a New Room (Player 1)
         </div>
+
+        <!-- Target Score Select placed BEFORE the Host Button -->
+        <div class="text-left">
+          <label for="target-score-select" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+            Match Winning Target
+          </label>
+          <select id="target-score-select" class="w-full border-2 border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-emerald-500 transition-colors">
+            <option value="300">First to 300 Points (Quick Match)</option>
+            <option value="500" selected>First to 500 Points (Standard)</option>
+            <option value="1000">First to 1000 Points (Marathon)</option>
+          </select>
+        </div>
+
         <button id="btn-create-room" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
           <i class="fa-solid fa-plus"></i> Host Match & Get Code
         </button>
       </div>
-<!-- Add inside your Room Host/Setup UI -->
-<div class="mb-4 text-left">
-  <label for="target-score-select" class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">
-    Match Winning Target
-  </label>
-  <select id="target-score-select" class="w-full border-2 border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 bg-white focus:outline-none focus:border-indigo-500 transition-colors">
-    <option value="3">First to 300 Points (Quick Match)</option>
-    <option value="5" selected>First to 500 Points (Standard)</option>
-    <option value="10">First to 1000 Points (Marathon)</option>
-  </select>
-</div>
       <!-- Option B: Join existing room -->
       <div class="p-4 rounded-2xl bg-slate-50 border border-indigo-300 space-y-3">
         <div class="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
@@ -1289,8 +1291,45 @@ window.closeVictoryModal = function() {
     resetGameScores();
   }
 };
-  </script>
-  <!-- Victory Celebration Modal -->
+    // Check if a player hit the target score (Call this inside your answer submission / score increment logic)
+function checkMatchWinner(p1Score, p2Score) {
+  const target = state.winningTarget || 500;
+  
+  if (p1Score >= target || p2Score >= target) {
+    const isP1Winner = p1Score >= target;
+    const winnerLabel = isP1Winner ? "Player 1" : "Player 2";
+    
+    showVictoryModal(winnerLabel, p1Score, p2Score);
+  }
+}
+
+// Display victory modal
+function showVictoryModal(winnerName, p1Score, p2Score) {
+  document.getElementById('winner-title').textContent = `${winnerName} Wins! 🎉`;
+  document.getElementById('winner-subtext').textContent = `Reached the ${state.winningTarget || 500}-point match target!`;
+  document.getElementById('final-host-score').textContent = `${p1Score} pts`;
+  document.getElementById('final-guest-score').textContent = `${p2Score} pts`;
+  
+  document.getElementById('game-over-modal').classList.remove('hidden');
+}
+
+// Reset match scores safely without wiping drawn cards
+window.closeVictoryModal = function() {
+  document.getElementById('game-over-modal').classList.add('hidden');
+  
+  // Reset score state
+  if (state.scores) {
+    state.scores.p1 = 0;
+    state.scores.p2 = 0;
+  }
+  
+  // Update UI scores
+  const p1Elem = document.getElementById('p1-score');
+  const p2Elem = document.getElementById('p2-score');
+  if (p1Elem) p1Elem.textContent = '0 pts';
+  if (p2Elem) p2Elem.textContent = '0 pts';
+};
+    <!-- Victory Celebration Modal -->
 <div id="game-over-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl transform transition-all border-4 border-amber-300">
     <!-- Icon / Badge -->
@@ -1320,5 +1359,6 @@ window.closeVictoryModal = function() {
     </button>
   </div>
 </div>
+  </script>
 </body>
 </html>
