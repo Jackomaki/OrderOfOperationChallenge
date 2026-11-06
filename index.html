@@ -387,7 +387,17 @@
           <i class="fa-solid fa-plus"></i> Host Match & Get Code
         </button>
       </div>
-
+<!-- Add inside your Room Host/Setup UI -->
+<div class="mb-4 text-left">
+  <label for="target-score-select" class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">
+    Match Winning Target
+  </label>
+  <select id="target-score-select" class="w-full border-2 border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 bg-white focus:outline-none focus:border-indigo-500 transition-colors">
+    <option value="3">First to 300 Points (Quick Match)</option>
+    <option value="5" selected>First to 500 Points (Standard)</option>
+    <option value="10">First to 1000 Points (Marathon)</option>
+  </select>
+</div>
       <!-- Option B: Join existing room -->
       <div class="p-4 rounded-2xl bg-slate-50 border border-indigo-300 space-y-3">
         <div class="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
@@ -923,9 +933,22 @@ const db = getFirestore(app);
       if (!db) return;
 
       const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
-      state.roomUnsubscribe = onSnapshot(roomRef, (snapshot) => {
-        if (!snapshot.exists()) return;
-        const data = snapshot.data();
+      state.roomUnsubscribe = onSnapshot(roomRef, (docSnap) => {
+  if (!docSnap.exists()) return;
+  const data = docSnap.data();
+
+  // Sync winning target set by host
+  if (data.winningTarget) {
+    state.winningTarget = data.winningTarget;
+  }
+
+  // Update live scores
+  const hostScore = data.hostScore || 0;
+  const guestScore = data.guestScore || 0;
+
+  // Check if either player hit the finishing target
+  checkMatchWinner(hostScore, guestScore);
+});
 
         // Sync Cards across both devices
         if (data.cards && JSON.stringify(data.cards) !== JSON.stringify(state.cards)) {
@@ -1211,6 +1234,91 @@ const db = getFirestore(app);
     function hideFeedback() {
       if (elements.feedbackMsg) elements.feedbackMsg.classList.add('hidden');
     }
+    // 1. Ensure target score is stored in your global state object
+state.winningTarget = 500; // Default target
+
+// 2. When creating/hosting the online room, attach the chosen winning target
+async function createOnlineRoom() {
+  const targetSelect = document.getElementById('target-score-select');
+  const selectedTarget = targetSelect ? parseInt(targetSelect.value, 10) : 5;
+  
+  state.winningTarget = selectedTarget;
+
+  // Include target in Firestore room creation
+  const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode);
+  await setDoc(roomRef, {
+    host: currentUser ? currentUser.uid : 'host',
+    target: state.targetNumber,
+    winningTarget: selectedTarget, // <-- Broadcast target to guest
+    hostScore: 0,
+    guestScore: 0,
+    status: 'waiting',
+    updatedAt: Date.now()
+  });
+}
+
+// 3. Call this check whenever points are awarded (e.g. after a valid 24 expression)
+function checkMatchWinner(hostScore, guestScore) {
+  const target = state.winningTarget || 5;
+  
+  if (hostScore >= target || guestScore >= target) {
+    const isHostWinner = hostScore >= target;
+    const winnerLabel = isHostWinner ? "Player 1 (Host)" : "Player 2 (Guest)";
+    
+    showVictoryModal(winnerLabel, hostScore, guestScore);
+  }
+}
+
+// 4. Show the Victory Celebration Modal
+function showVictoryModal(winnerName, hostScore, guestScore) {
+  document.getElementById('winner-title').textContent = `${winnerName} Wins! 🎉`;
+  document.getElementById('winner-subtext').textContent = `Reached the ${state.winningTarget}-point winning target!`;
+  document.getElementById('final-host-score').textContent = hostScore;
+  document.getElementById('final-guest-score').textContent = guestScore;
+  
+  const modal = document.getElementById('game-over-modal');
+  modal.classList.remove('hidden');
+}
+
+// 5. Dismiss modal and reset match
+window.closeVictoryModal = function() {
+  document.getElementById('game-over-modal').classList.add('hidden');
+  
+  // Optionally reset scores or return to room lobby
+  if (typeof resetGameScores === 'function') {
+    resetGameScores();
+  }
+};
   </script>
+  <!-- Victory Celebration Modal -->
+<div id="game-over-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl transform transition-all border-4 border-amber-300">
+    <!-- Icon / Badge -->
+    <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner text-4xl">
+      🏆
+    </div>
+    
+    <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-1" id="winner-title">Match Champion!</h2>
+    <p class="text-sm font-medium text-slate-500 mb-6" id="winner-subtext">Player 1 reached the winning target!</p>
+    
+    <!-- Final Scores Summary -->
+    <div class="bg-slate-50 rounded-2xl p-4 mb-6 flex justify-around items-center border border-slate-100">
+      <div>
+        <div class="text-xs font-bold text-slate-400 uppercase">Host</div>
+        <div class="text-2xl font-black text-indigo-600" id="final-host-score">0</div>
+      </div>
+      <div class="text-lg font-black text-slate-300">VS</div>
+      <div>
+        <div class="text-xs font-bold text-slate-400 uppercase">Guest</div>
+        <div class="text-2xl font-black text-emerald-600" id="final-guest-score">0</div>
+      </div>
+    </div>
+
+    <!-- Return / Play Again Buttons -->
+    <button onclick="closeVictoryModal()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold rounded-xl shadow-lg shadow-amber-500/30 transition-all active:scale-95">
+      Play Again
+    </button>
+  </div>
+</div>
 </body>
 </html>
