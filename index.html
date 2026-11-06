@@ -476,14 +476,15 @@
 
     // Global App ID & Firebase Config Setup
     const appId = typeof __app_id !== 'undefined' ? __app_id : '24-card-game';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' 
-      ? JSON.parse(__firebase_config) 
-      : null;
-
-    let db = null;
-    let auth = null;
-    let currentUser = null;
-
+    const firebaseConfig = {
+  apiKey: "AIzaSyDNB0sqTLZI9lkca7PyBxSpxfxytmJtEtI",
+  authDomain: "orderofoperationschallenge.firebaseapp.com",
+  projectId: "orderofoperationschallenge",
+  storageBucket: "orderofoperationschallenge.firebasestorage.app",
+  messagingSenderId: "474125587176",
+  appId: "1:474125587176:web:c09e9c2b4f13ae44736f5d",
+  measurementId: "G-5L16QEXNMC"
+};
     if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.apiKey !== 'demo') {
       try {
         const app = initializeApp(firebaseConfig);
