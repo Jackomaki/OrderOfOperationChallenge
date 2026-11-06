@@ -149,6 +149,22 @@
     </div>
   </div>
 
+  <!-- Custom Cards Practice Bar (Moved up right below Online Room Banner) -->
+  <div class="max-w-6xl w-full mx-auto px-4 mt-3">
+    <div class="glass-panel p-4 rounded-2xl border border-slate-300 bg-white/90 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-sliders text-purple-600 text-sm"></i>
+        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Practice Specific Cards:</span>
+      </div>
+      <div class="flex items-center gap-2 flex-1 max-w-md">
+        <input id="input-custom-cards" type="text" placeholder="e.g. 3, 8, 3, 1" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-purple-500">
+        <button id="btn-custom-set" onclick="setCustomPracticeCards()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shrink-0 shadow-sm">
+          Set Cards
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- PvP Scoreboard Banner (Hidden in Single Player) -->
   <div id="pvp-scoreboard" class="hidden max-w-6xl w-full mx-auto px-4 mt-4">
     <div class="grid grid-cols-2 gap-4">
@@ -311,20 +327,6 @@
 
     <!-- Feedback Toast Message -->
     <div id="feedback-message" class="hidden p-3.5 rounded-2xl text-sm font-semibold text-center transition-all duration-300"></div>
-
-    <!-- Custom Cards Practice Bar -->
-    <div class="glass-panel p-4 rounded-2xl border border-slate-300 bg-white/90 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-sliders text-purple-600 text-sm"></i>
-        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Practice Specific Cards:</span>
-      </div>
-      <div class="flex items-center gap-2 flex-1 max-w-md">
-        <input id="input-custom-cards" type="text" placeholder="e.g. 3, 8, 3, 1" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-purple-500">
-        <button id="btn-custom-set" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shrink-0 shadow-sm">
-          Set Cards
-        </button>
-      </div>
-    </div>
 
   </main>
 
@@ -575,6 +577,22 @@
       </button>
     </div>
 
+    <!-- Target Equation Value Setting -->
+    <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-300 space-y-3">
+      <label for="input-target-val" class="block text-[11px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+        <i class="fa-solid fa-bullseye text-amber-600"></i> Target Equation Value
+      </label>
+      <div class="flex gap-2">
+        <input id="input-target-val" type="number" value="24" placeholder="24" class="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-center text-lg font-black mono text-amber-950 focus:outline-none focus:border-amber-500">
+        <div class="flex gap-1">
+          <button onclick="document.getElementById('input-target-val').value=12" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">12</button>
+          <button onclick="document.getElementById('input-target-val').value=24" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">24</button>
+          <button onclick="document.getElementById('input-target-val').value=36" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">36</button>
+        </div>
+      </div>
+      <p class="text-[10px] text-amber-700">Set the mathematical target students must construct using all 4 cards.</p>
+    </div>
+
     <!-- Match Format (Single Player Solo vs 1v1 PvP) -->
     <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
       <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
@@ -713,6 +731,12 @@ const firebaseConfig = {
       state.winningTarget = parseInt(offlineTargetSelect.value, 10);
     }
     
+    // Update Target Value students must form
+    const customTargetInput = document.getElementById('input-target-val');
+    if (customTargetInput && customTargetInput.value) {
+      state.target = parseFloat(customTargetInput.value) || 24;
+    }
+
     // Update Badges & Rule Description
     const modeBadge = document.getElementById('badge-mode');
     const pvpBadge = document.getElementById('badge-pvp');
@@ -730,8 +754,8 @@ const firebaseConfig = {
 
     if (ruleDesc) {
       ruleDesc.innerHTML = state.mode === 'p5_twist' ?
-        'Singapore P5 Edition: Fractional operations (+, -, &times;, &divide;) allowed to reach <span class="font-bold text-amber-700">24</span>!' :
-        'Combine 4 numbers using (+, -, &times;, &divide;) to reach <span class="font-bold text-amber-700">24</span>!';
+        `Singapore P5 Edition: Fractional operations (+, -, &times;, &divide;) allowed to reach <span class="font-bold text-amber-700">${state.target}</span>!` :
+        `Combine 4 numbers using (+, -, &times;, &divide;) to reach <span class="font-bold text-amber-700">${state.target}</span>!`;
     }
 
     if (state.format === 'pvp') {
@@ -762,6 +786,27 @@ const firebaseConfig = {
     closeSettingsModal();
     if (typeof window.generateSolvableCards === 'function') {
       window.generateSolvableCards();
+    }
+  };
+
+  // Custom Practice Cards Handler
+  window.setCustomPracticeCards = function() {
+    const input = document.getElementById('input-custom-cards');
+    if (!input || !input.value.trim()) return;
+
+    const parsed = input.value.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+    if (parsed.length === 4) {
+      state.cards = parsed;
+      state.usedCards = [];
+      state.p1UsedCards = [];
+      state.p2UsedCards = [];
+      state.expression = [];
+      state.p1Expression = [];
+      state.p2Expression = [];
+      updateDisplay();
+      renderCards();
+    } else {
+      alert("Please enter exactly 4 comma-separated numbers (e.g. 3, 8, 3, 1)");
     }
   };
 
