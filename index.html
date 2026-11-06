@@ -117,6 +117,7 @@
         <div id="room-code-badge" class="hidden flex items-center gap-2 glass-panel px-3 py-1.5 rounded-lg border border-emerald-400 text-emerald-800 font-bold text-xs bg-emerald-50">
           <i class="fa-solid fa-wifi text-emerald-600 animate-pulse"></i>
           <span>ROOM: <span id="display-room-code" class="mono text-indigo-700 tracking-wider">----</span></span>
+          <button onclick="leaveOnlineRoom()" class="ml-2 text-rose-600 hover:text-rose-800 font-bold" title="Leave Room">&times;</button>
         </div>
         <div class="flex items-center gap-2 glass-panel px-3 py-1.5 rounded-lg border border-slate-300 bg-white">
           <i class="fa-solid fa-clock text-indigo-600"></i>
@@ -132,8 +133,24 @@
     </div>
   </header>
 
-  <!-- PvP Scoreboard Banner -->
-  <div id="pvp-scoreboard" class="max-w-6xl w-full mx-auto px-4 mt-4">
+  <!-- Online Room Banner with Leave Room -->
+  <div id="online-room-banner" class="hidden max-w-6xl w-full mx-auto px-4 mt-3">
+    <div class="glass-panel p-3 rounded-2xl border border-emerald-300 bg-emerald-50/90 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+        <span class="font-bold text-emerald-900">Online Room Connected!</span>
+        <span id="player-role-indicator" class="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 font-semibold">Online Match Active</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="leaveOnlineRoom()" class="px-2.5 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-semibold border border-rose-300">
+          <i class="fa-solid fa-right-from-bracket"></i> Leave Room
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP Scoreboard Banner (Hidden in Single Player) -->
+  <div id="pvp-scoreboard" class="hidden max-w-6xl w-full mx-auto px-4 mt-4">
     <div class="grid grid-cols-2 gap-4">
       <!-- Player 1 Card -->
       <div id="p1-card" class="glass-panel p-3.5 rounded-2xl border-2 border-rose-300 flex items-center justify-between bg-rose-50/80 transition-all">
@@ -172,8 +189,8 @@
         <span id="badge-mode" class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-xs font-semibold">
           Standard Mode
         </span>
-        <span id="badge-pvp" class="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-xs font-semibold">
-          Simultaneous 1v1 Race
+        <span id="badge-pvp" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300 text-xs font-semibold">
+          Single Player Solo
         </span>
       </div>
       <div id="rule-description" class="text-xs text-slate-600 font-medium">
@@ -233,8 +250,8 @@
       </button>
     </div>
 
-    <!-- Simultaneous 1v1 Workspaces -->
-    <div id="simultaneous-workspace" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <!-- Simultaneous 1v1 Workspaces (Hidden by Default in Single Player) -->
+    <div id="simultaneous-workspace" class="hidden grid grid-cols-1 md:grid-cols-2 gap-5">
       <!-- P1 Workspace -->
       <div class="glass-panel p-5 rounded-3xl border border-rose-300 bg-rose-50/60 space-y-3">
         <div class="flex justify-between items-center text-xs text-rose-800 font-bold">
@@ -566,38 +583,53 @@
   <div class="glass-panel bg-white max-w-md w-full rounded-3xl p-6 border border-slate-300 shadow-2xl space-y-5">
     <div class="flex items-center justify-between border-b border-slate-200 pb-3">
       <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-        <i class="fa-solid fa-gear text-indigo-600"></i> Local Match Setup
+        <i class="fa-solid fa-gear text-indigo-600"></i> Match & Game Settings
       </h2>
       <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
     </div>
 
-    <!-- Match Target for Offline/Local Play -->
+    <!-- Match Format (Single Player Solo vs 1v1 PvP) -->
+    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+        Match Format
+      </label>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btn-format-single" onclick="setMatchFormat('single')" class="py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm">
+          Single Player Solo
+        </button>
+        <button id="btn-format-pvp" onclick="setMatchFormat('pvp')" class="py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs">
+          1v1 Race (PvP)
+        </button>
+      </div>
+    </div>
+
+    <!-- Mode Selector -->
+    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+        Curriculum Mode
+      </label>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btn-mode-standard" onclick="setGameMode('standard')" class="py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm">
+          Standard Mode
+        </button>
+        <button id="btn-mode-p5" onclick="setGameMode('p5_twist')" class="py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs">
+          P5 Twist Mode
+        </button>
+      </div>
+    </div>
+
+    <!-- Match Target for Play -->
     <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
       <label for="offline-target-score-select" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
-        Local Match Winning Target
+        Match Winning Target
       </label>
       <select id="offline-target-score-select" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-indigo-500">
         <option value="300">First to 300 Points (Quick Match)</option>
         <option value="500" selected>First to 500 Points (Standard)</option>
         <option value="1000">First to 1000 Points (Marathon)</option>
       </select>
-    </div>
-
-    <!-- Mode Selector -->
-    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
-        Select Game Mode
-      </label>
-      <div class="grid grid-cols-2 gap-2">
-        <button onclick="setGameMode('standard')" class="py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm">
-          Standard Mode
-        </button>
-        <button onclick="setGameMode('p5_twist')" class="py-2.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 font-bold text-xs border border-purple-300">
-          P5 Twist Mode
-        </button>
-      </div>
     </div>
 
     <button onclick="applyOfflineSettings()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-indigo-500/20 transition-all">
@@ -636,6 +668,8 @@ const firebaseConfig = {
     p2Expression: [],
     scores: { p1: 0, p2: 0 },
     winningTarget: 500,
+    mode: 'standard',
+    format: 'single',
     target: 24
   };
 
@@ -660,11 +694,79 @@ const firebaseConfig = {
     document.getElementById('settings-modal')?.classList.add('hidden');
   };
 
+  window.setMatchFormat = function(formatType) {
+    state.format = formatType;
+    const btnSingle = document.getElementById('btn-format-single');
+    const btnPvp = document.getElementById('btn-format-pvp');
+    
+    if (formatType === 'pvp') {
+      btnPvp.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
+      btnSingle.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+    } else {
+      btnSingle.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
+      btnPvp.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+    }
+  };
+
+  window.setGameMode = function(modeName) {
+    state.mode = modeName;
+    const btnStandard = document.getElementById('btn-mode-standard');
+    const btnP5 = document.getElementById('btn-mode-p5');
+
+    if (modeName === 'p5_twist') {
+      btnP5.className = "py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-sm";
+      btnStandard.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+    } else {
+      btnStandard.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
+      btnP5.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+    }
+  };
+
   window.applyOfflineSettings = function() {
     const offlineTargetSelect = document.getElementById('offline-target-score-select');
     if (offlineTargetSelect) {
       state.winningTarget = parseInt(offlineTargetSelect.value, 10);
     }
+    
+    // Update Badges & Rule Description
+    const modeBadge = document.getElementById('badge-mode');
+    const pvpBadge = document.getElementById('badge-pvp');
+    const ruleDesc = document.getElementById('rule-description');
+    const pvpScoreboard = document.getElementById('pvp-scoreboard');
+    const singleWorkspace = document.getElementById('single-workspace');
+    const pvpWorkspace = document.getElementById('simultaneous-workspace');
+
+    if (modeBadge) {
+      modeBadge.textContent = state.mode === 'p5_twist' ? 'P5 Twist Mode' : 'Standard Mode';
+      modeBadge.className = state.mode === 'p5_twist' ? 
+        'px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-xs font-semibold' :
+        'px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-xs font-semibold';
+    }
+
+    if (ruleDesc) {
+      ruleDesc.innerHTML = state.mode === 'p5_twist' ?
+        'Singapore P5 Edition: Fractional operations (+, -, &times;, &divide;) allowed to reach <span class="font-bold text-amber-700">24</span>!' :
+        'Combine 4 numbers using (+, -, &times;, &divide;) to reach <span class="font-bold text-amber-700">24</span>!';
+    }
+
+    if (state.format === 'pvp') {
+      if (pvpBadge) {
+        pvpBadge.textContent = 'Simultaneous 1v1 Race';
+        pvpBadge.className = 'px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-xs font-semibold';
+      }
+      pvpScoreboard?.classList.remove('hidden');
+      singleWorkspace?.classList.add('hidden');
+      pvpWorkspace?.classList.remove('hidden');
+    } else {
+      if (pvpBadge) {
+        pvpBadge.textContent = 'Single Player Solo';
+        pvpBadge.className = 'px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300 text-xs font-semibold';
+      }
+      pvpScoreboard?.classList.add('hidden');
+      singleWorkspace?.classList.remove('hidden');
+      pvpWorkspace?.classList.add('hidden');
+    }
+
     state.scores.p1 = 0;
     state.scores.p2 = 0;
     const p1Elem = document.getElementById('p1-score');
@@ -678,12 +780,21 @@ const firebaseConfig = {
     }
   };
 
-  window.setGameMode = function(modeName) {
-    state.mode = modeName;
-    const badge = document.getElementById('badge-mode');
-    if (badge) {
-      badge.textContent = modeName === 'p5_twist' ? 'P5 Twist Mode' : 'Standard Mode';
+  // Leave Online Room Function
+  window.leaveOnlineRoom = function() {
+    if (unsubscribeRoom) {
+      unsubscribeRoom();
+      unsubscribeRoom = null;
     }
+    currentRoomCode = null;
+    isHost = false;
+
+    document.getElementById('room-code-badge')?.classList.add('hidden');
+    document.getElementById('online-room-banner')?.classList.add('hidden');
+    document.getElementById('display-room-code').textContent = '----';
+
+    // Revert UI view back to default format setting
+    applyOfflineSettings();
   };
 
   // Host Online Room
@@ -709,6 +820,12 @@ const firebaseConfig = {
 
       document.getElementById('display-room-code').textContent = roomCode;
       document.getElementById('room-code-badge')?.classList.remove('hidden');
+      document.getElementById('online-room-banner')?.classList.remove('hidden');
+      
+      // Auto-enable 1v1 Race view for online rooms
+      setMatchFormat('pvp');
+      applyOfflineSettings();
+
       closeMultiplayerModal();
       listenToRoom(roomCode);
 
@@ -747,6 +864,12 @@ const firebaseConfig = {
 
       document.getElementById('display-room-code').textContent = roomCode;
       document.getElementById('room-code-badge')?.classList.remove('hidden');
+      document.getElementById('online-room-banner')?.classList.remove('hidden');
+
+      // Auto-enable 1v1 Race view for online rooms
+      setMatchFormat('pvp');
+      applyOfflineSettings();
+
       closeMultiplayerModal();
       listenToRoom(roomCode);
 
