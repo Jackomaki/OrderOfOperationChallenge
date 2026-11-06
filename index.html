@@ -470,13 +470,11 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Global App ID & Firebase Config Setup
-    const appId = typeof __app_id !== 'undefined' ? __app_id : '24-card-game';
-    const firebaseConfig = {
+// Hardcode your actual Firebase config here so it never evaluates to null
+const firebaseConfig = {
   apiKey: "AIzaSyDNB0sqTLZI9lkca7PyBxSpxfxytmJtEtI",
   authDomain: "orderofoperationschallenge.firebaseapp.com",
   projectId: "orderofoperationschallenge",
@@ -485,28 +483,10 @@
   appId: "1:474125587176:web:c09e9c2b4f13ae44736f5d",
   measurementId: "G-5L16QEXNMC"
 };
-    if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.apiKey !== 'demo') {
-      try {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          signInWithCustomToken(auth, __initial_auth_token).catch(() => signInAnonymously(auth));
-        } else {
-          signInAnonymously(auth);
-        }
-
-        onAuthStateChanged(auth, (user) => {
-          if (user) currentUser = user;
-        });
-      } catch (err) {
-        console.warn("Cloud features running in offline fallback mode.");
-      }
-    } else {
-      console.log("No cloud database config provided. Online features operating in fallback local room mode.");
-    }
-
+    
+// Initialize Firebase and Firestore explicitly
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
     // Game State
     const state = {
       matchFormat: 'simultaneous',
