@@ -120,26 +120,6 @@
       pointer-events: none;
       transform: scale(0.95);
     }
-    .playing-card-p1-used {
-      border-color: #f43f5e !important;
-      background-color: #fff1f2 !important;
-    }
-    .playing-card-p2-used {
-      border-color: #3b82f6 !important;
-      background-color: #eff6ff !important;
-    }
-    .active-player-glow-1 {
-      box-shadow: 0 0 25px rgba(225, 29, 72, 0.3);
-      border-color: rgba(225, 29, 72, 0.8) !important;
-    }
-    .active-player-glow-2 {
-      box-shadow: 0 0 25px rgba(37, 99, 235, 0.3);
-      border-color: rgba(37, 99, 235, 0.8) !important;
-    }
-
-    header { background-color: #ffffff; color: #0f172a; border-bottom: 1px solid #e2e8f0; }
-    main { background: transparent; }
-    #cards-container { display: grid; min-height: 180px; }
   </style>
 </head>
 <body class="flex flex-col min-h-screen text-slate-900 relative">
@@ -175,7 +155,7 @@
           <span>ROOM: <span id="display-room-code" class="mono text-indigo-700 tracking-wider">----</span></span>
           <button onclick="leaveOnlineRoom()" class="ml-2 text-rose-600 hover:text-rose-800 font-bold" title="Leave Room">&times;</button>
         </div>
-        <!-- REMOVED TIMER WIDGET -->
+        
         <button id="btn-online-room" onclick="openMultiplayerModal()" class="glass-button px-3 py-1.5 rounded-lg text-emerald-700 hover:text-emerald-900 flex items-center gap-2 text-xs font-semibold border border-emerald-300 bg-emerald-50/80">
           <i class="fa-solid fa-globe"></i> Online Room
         </button>
@@ -189,7 +169,6 @@
   <!-- Collapsible PEMDAS / Order of Operations Hint Bar -->
   <div class="max-w-6xl w-full mx-auto px-4 mt-3">
     <div class="glass-panel rounded-2xl border border-indigo-200 bg-indigo-50/80 transition-all overflow-hidden">
-      <!-- Toggle Header Button -->
       <button onclick="togglePemdasHint()" class="w-full px-3.5 py-2 flex items-center justify-between text-xs font-bold text-indigo-900 hover:bg-indigo-100/50 transition-colors">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-lightbulb text-amber-500 text-sm"></i>
@@ -201,7 +180,6 @@
         </div>
       </button>
 
-      <!-- Collapsible Rule Details Body -->
       <div id="pemdas-hint-body" class="hidden px-3.5 pb-3 pt-1 border-t border-indigo-100 flex flex-wrap items-center justify-between gap-2 text-xs">
         <div class="flex items-center gap-1.5 text-[11px] font-semibold flex-wrap">
           <span class="px-2 py-0.5 rounded-lg bg-purple-200 text-purple-900 border border-purple-300">( ) Brackets First</span>
@@ -292,7 +270,7 @@
         </span>
       </div>
       <div id="rule-description" class="text-xs text-slate-600 font-medium">
-        Combine 4 numbers using (+, -, &times;, &divide;) to reach <span class="font-bold text-amber-700">24</span>!
+        Combine 4 numbers using (+, -, &times;, &divide;) to reach <span id="target-value-display" class="font-bold text-amber-700">24</span>!
       </div>
     </div>
 
@@ -343,7 +321,7 @@
         <button class="op-btn glass-button py-3.5 rounded-xl text-indigo-700 font-bold text-xl hover:border-indigo-400" data-op=")">)</button>
       </div>
 
-      <button id="btn-submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-base shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+      <button id="btn-submit" onclick="submitSingleSolution()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-base shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
         <i class="fa-solid fa-circle-check"></i> Submit & Check Answer
       </button>
     </div>
@@ -373,7 +351,7 @@
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op="(">(</button>
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-rose-700 font-bold text-base bg-white border border-rose-200" data-p="1" data-op=")">)</button>
         </div>
-        <button id="btn-submit-p1" class="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-sm shadow-md shadow-rose-600/20">
+        <button id="btn-submit-p1" onclick="submitPvPSolution(1)" class="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-sm shadow-md shadow-rose-600/20">
           Submit P1 Solution
         </button>
       </div>
@@ -401,7 +379,7 @@
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op="(">(</button>
           <button class="op-btn-pvp glass-button py-2.5 rounded-lg text-blue-700 font-bold text-base bg-white border border-blue-200" data-p="2" data-op=")">)</button>
         </div>
-        <button id="btn-submit-p2" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm shadow-md shadow-blue-600/20">
+        <button id="btn-submit-p2" onclick="submitPvPSolution(2)" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm shadow-md shadow-blue-600/20">
           Submit P2 Solution
         </button>
       </div>
@@ -411,168 +389,166 @@
     <div id="feedback-message" class="hidden p-3.5 rounded-2xl text-sm font-semibold text-center transition-all duration-300"></div>
 
   </main>
-</body>
-</html>
 
-<!-- Online Multiplayer Lobby Modal -->
-<div id="multiplayer-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-  <div class="glass-panel bg-white max-w-md w-full rounded-3xl p-6 border border-slate-300 shadow-2xl space-y-5">
-    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-      <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-        <i class="fa-solid fa-globe text-emerald-600"></i> Online 2-Device Multiplayer
-      </h2>
-      <button onclick="closeMultiplayerModal()" class="text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
+  <!-- Online Multiplayer Lobby Modal -->
+  <div id="multiplayer-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-panel bg-white max-w-md w-full rounded-3xl p-6 border border-slate-300 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-globe text-emerald-600"></i> Online 2-Device Multiplayer
+        </h2>
+        <button onclick="closeMultiplayerModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Option A: Host a Room -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-emerald-300 space-y-3">
+        <div class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+          <i class="fa-solid fa-crown text-amber-500"></i> Option A: Host Room (Player 1)
+        </div>
+        
+        <div>
+          <label for="target-score-select" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+            Match Winning Target
+          </label>
+          <select id="target-score-select" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-emerald-500">
+            <option value="300">First to 300 Points (Quick Match)</option>
+            <option value="500" selected>First to 500 Points (Standard)</option>
+            <option value="1000">First to 1000 Points (Marathon)</option>
+          </select>
+        </div>
+
+        <button id="btn-create-room" onclick="hostOnlineRoom()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus"></i> Host Match & Get Code
+        </button>
+      </div>
+
+      <!-- Option B: Join Existing Room -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-indigo-300 space-y-3">
+        <div class="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
+          <i class="fa-solid fa-right-to-bracket text-indigo-600"></i> Option B: Join Room (Player 2)
+        </div>
+        <div class="flex gap-2">
+          <input id="join-room-code-input" type="text" maxlength="4" placeholder="e.g. A8X2" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-center text-base font-bold tracking-widest uppercase mono text-indigo-900 focus:outline-none focus:border-indigo-500">
+          <button onclick="joinOnlineRoom()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shrink-0">
+            Join Match
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Option A: Host a Room -->
-    <div class="p-4 rounded-2xl bg-slate-50 border border-emerald-300 space-y-3">
-      <div class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-        <i class="fa-solid fa-crown text-amber-500"></i> Option A: Host Room (Player 1)
+  <!-- Match Victory Modal -->
+  <div id="game-over-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-panel bg-white max-w-sm w-full rounded-3xl p-6 text-center shadow-2xl border-4 border-amber-300 space-y-4">
+      <div class="w-16 h-16 bg-amber-100 text-amber-500 rounded-2xl flex items-center justify-center mx-auto shadow-inner text-3xl border border-amber-300">
+        🏆
       </div>
       
       <div>
-        <label for="target-score-select" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+        <h2 class="text-xl font-black text-slate-900 tracking-tight" id="winner-title">Match Champion!</h2>
+        <p class="text-xs font-medium text-slate-500 mt-0.5" id="winner-subtext">Player reached the winning target!</p>
+      </div>
+      
+      <div class="bg-slate-50 rounded-2xl p-4 flex justify-around items-center border border-slate-200">
+        <div>
+          <div class="text-[10px] font-bold text-rose-600 uppercase">Player 1</div>
+          <div class="text-xl font-black text-rose-950 mono" id="final-host-score">0 pts</div>
+        </div>
+        <div class="text-xs font-black text-slate-400">VS</div>
+        <div>
+          <div class="text-[10px] font-bold text-blue-600 uppercase">Player 2</div>
+          <div class="text-xl font-black text-blue-950 mono" id="final-guest-score">0 pts</div>
+        </div>
+      </div>
+
+      <button onclick="closeVictoryModal()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition-all">
+        Play Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Offline Settings / Match Setup Modal -->
+  <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-panel bg-white max-w-md w-full rounded-3xl p-6 border border-slate-300 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-gear text-indigo-600"></i> Match & Game Settings
+        </h2>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Target Equation Value Setting -->
+      <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-300 space-y-3">
+        <label for="input-target-val" class="block text-[11px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-bullseye text-amber-600"></i> Target Equation Value
+        </label>
+        <div class="flex gap-2">
+          <input id="input-target-val" type="number" value="24" placeholder="24" class="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-center text-lg font-black mono text-amber-950 focus:outline-none focus:border-amber-500">
+          <div class="flex gap-1">
+            <button onclick="document.getElementById('input-target-val').value=12" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">12</button>
+            <button onclick="document.getElementById('input-target-val').value=24" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">24</button>
+            <button onclick="document.getElementById('input-target-val').value=36" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">36</button>
+          </div>
+        </div>
+        <p class="text-[10px] text-amber-700">Set the mathematical target students must construct using all 4 cards.</p>
+      </div>
+
+      <!-- Match Format (Single Player Solo vs 1v1 PvP) -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+          Match Format
+        </label>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btn-format-single" onclick="setMatchFormat('single')" class="py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm">
+            Single Player Solo
+          </button>
+          <button id="btn-format-pvp" onclick="setMatchFormat('pvp')" class="py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs">
+            1v1 Race (PvP)
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode Selector -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+          Curriculum Mode
+        </label>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btn-mode-standard" onclick="setGameMode('standard')" class="py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm">
+            Standard Mode
+          </button>
+          <button id="btn-mode-p5" onclick="setGameMode('p5_twist')" class="py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs">
+            P5 Twist Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- Match Target for Play -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+        <label for="offline-target-score-select" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
           Match Winning Target
         </label>
-        <select id="target-score-select" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-emerald-500">
+        <select id="offline-target-score-select" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-indigo-500">
           <option value="300">First to 300 Points (Quick Match)</option>
           <option value="500" selected>First to 500 Points (Standard)</option>
           <option value="1000">First to 1000 Points (Marathon)</option>
         </select>
       </div>
 
-      <button id="btn-create-room" onclick="hostOnlineRoom()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2">
-        <i class="fa-solid fa-plus"></i> Host Match & Get Code
+      <button onclick="applyOfflineSettings()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-indigo-500/20 transition-all">
+        Apply & Start Match
       </button>
     </div>
-
-    <!-- Option B: Join Existing Room -->
-    <div class="p-4 rounded-2xl bg-slate-50 border border-indigo-300 space-y-3">
-      <div class="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
-        <i class="fa-solid fa-right-to-bracket text-indigo-600"></i> Option B: Join Room (Player 2)
-      </div>
-      <div class="flex gap-2">
-        <input id="join-room-code-input" type="text" maxlength="4" placeholder="e.g. A8X2" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-center text-base font-bold tracking-widest uppercase mono text-indigo-900 focus:outline-none focus:border-indigo-500">
-        <button onclick="joinOnlineRoom()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shrink-0">
-          Join Match
-        </button>
-      </div>
-    </div>
   </div>
-</div>
 
-<!-- Match Victory Modal -->
-<div id="game-over-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-  <div class="glass-panel bg-white max-w-sm w-full rounded-3xl p-6 text-center shadow-2xl border-4 border-amber-300 space-y-4">
-    <div class="w-16 h-16 bg-amber-100 text-amber-500 rounded-2xl flex items-center justify-center mx-auto shadow-inner text-3xl border border-amber-300">
-      🏆
-    </div>
-    
-    <div>
-      <h2 class="text-xl font-black text-slate-900 tracking-tight" id="winner-title">Match Champion!</h2>
-      <p class="text-xs font-medium text-slate-500 mt-0.5" id="winner-subtext">Player reached the winning target!</p>
-    </div>
-    
-    <div class="bg-slate-50 rounded-2xl p-4 flex justify-around items-center border border-slate-200">
-      <div>
-        <div class="text-[10px] font-bold text-rose-600 uppercase">Player 1</div>
-        <div class="text-xl font-black text-rose-950 mono" id="final-host-score">0 pts</div>
-      </div>
-      <div class="text-xs font-black text-slate-400">VS</div>
-      <div>
-        <div class="text-[10px] font-bold text-blue-600 uppercase">Player 2</div>
-        <div class="text-xl font-black text-blue-950 mono" id="final-guest-score">0 pts</div>
-      </div>
-    </div>
-
-    <button onclick="closeVictoryModal()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition-all">
-      Play Again
-    </button>
-  </div>
-</div>
-
-<!-- Offline Settings / Match Setup Modal -->
-<div id="settings-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-  <div class="glass-panel bg-white max-w-md w-full rounded-3xl p-6 border border-slate-300 shadow-2xl space-y-5">
-    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-      <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-        <i class="fa-solid fa-gear text-indigo-600"></i> Match & Game Settings
-      </h2>
-      <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-    </div>
-
-    <!-- Target Equation Value Setting -->
-    <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-300 space-y-3">
-      <label for="input-target-val" class="block text-[11px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-        <i class="fa-solid fa-bullseye text-amber-600"></i> Target Equation Value
-      </label>
-      <div class="flex gap-2">
-        <input id="input-target-val" type="number" value="24" placeholder="24" class="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-center text-lg font-black mono text-amber-950 focus:outline-none focus:border-amber-500">
-        <div class="flex gap-1">
-          <button onclick="document.getElementById('input-target-val').value=12" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">12</button>
-          <button onclick="document.getElementById('input-target-val').value=24" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">24</button>
-          <button onclick="document.getElementById('input-target-val').value=36" class="px-2.5 py-1.5 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs">36</button>
-        </div>
-      </div>
-      <p class="text-[10px] text-amber-700">Set the mathematical target students must construct using all 4 cards.</p>
-    </div>
-
-    <!-- Match Format (Single Player Solo vs 1v1 PvP) -->
-    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
-        Match Format
-      </label>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="btn-format-single" onclick="setMatchFormat('single')" class="py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm">
-          Single Player Solo
-        </button>
-        <button id="btn-format-pvp" onclick="setMatchFormat('pvp')" class="py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs">
-          1v1 Race (PvP)
-        </button>
-      </div>
-    </div>
-
-    <!-- Mode Selector -->
-    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
-        Curriculum Mode
-      </label>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="btn-mode-standard" onclick="setGameMode('standard')" class="py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm">
-          Standard Mode
-        </button>
-        <button id="btn-mode-p5" onclick="setGameMode('p5_twist')" class="py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs">
-          P5 Twist Mode
-        </button>
-      </div>
-    </div>
-
-    <!-- Match Target for Play -->
-    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-      <label for="offline-target-score-select" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
-        Match Winning Target
-      </label>
-      <select id="offline-target-score-select" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:border-indigo-500">
-        <option value="300">First to 300 Points (Quick Match)</option>
-        <option value="500" selected>First to 500 Points (Standard)</option>
-        <option value="1000">First to 1000 Points (Marathon)</option>
-      </select>
-    </div>
-
-    <button onclick="applyOfflineSettings()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-indigo-500/20 transition-all">
-      Apply & Start Match
-    </button>
-  </div>
-</div>
-
-<!-- Firebase & Application Script -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  <!-- Firebase & Application Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDNB0sqTLZI9lkca7PyBxSpxfxytmJtEtI",
@@ -583,478 +559,556 @@ const firebaseConfig = {
   appId: "1:474125587176:web:c09e9c2b4f13ae44736f5d",
   measurementId: "G-5L16QEXNMC"
 };
+    const appId = '24-card-game';
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  const appId = '24-card-game';
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    // Game Core State
+    window.state = {
+      cards: [6, 4, 3, 2],
+      usedCards: [],
+      p1UsedCards: [],
+      p2UsedCards: [],
+      expression: [],
+      p1Expression: [],
+      p2Expression: [],
+      scores: { p1: 0, p2: 0 },
+      winningTarget: 500,
+      mode: 'standard',
+      format: 'single',
+      target: 24
+    };
 
-  // Game Core State
-  window.state = {
-    cards: [6, 4, 3, 2],
-    usedCards: [],
-    p1UsedCards: [],
-    p2UsedCards: [],
-    expression: [],
-    p1Expression: [],
-    p2Expression: [],
-    scores: { p1: 0, p2: 0 },
-    winningTarget: 500,
-    mode: 'standard',
-    format: 'single',
-    target: 24,
-    timerSeconds: 60,
-    timerInterval: null
-  };
+    let currentRoomCode = null;
+    let isHost = false;
+    let unsubscribeRoom = null;
 
-  let currentRoomCode = null;
-  let isHost = false;
-  let unsubscribeRoom = null;
-
-  // Timer Management
-  function startTimer(durationInSeconds = 60) {
-    if (state.timerInterval) clearInterval(state.timerInterval);
-    state.timerSeconds = durationInSeconds;
-    updateTimerDisplay();
-
-    state.timerInterval = setInterval(() => {
-      if (state.timerSeconds > 0) {
-        state.timerSeconds--;
-        updateTimerDisplay();
-      } else {
-        clearInterval(state.timerInterval);
-        showFeedback("⏰ Time's up! Try dealing new cards.", "bg-amber-100 text-amber-800 border border-amber-300");
-      }
-    }, 1000);
-  }
-
-  function updateTimerDisplay() {
-    const timerElem = document.getElementById('timer-display');
-    if (!timerElem) return;
-    const mins = String(Math.floor(state.timerSeconds / 60)).padStart(2, '0');
-    const secs = String(state.timerSeconds % 60).padStart(2, '0');
-    timerElem.textContent = `${mins}:${secs}`;
-  }
-
-  function showFeedback(msg, styleClasses) {
-    const fb = document.getElementById('feedback-message');
-    if (!fb) return;
-    fb.textContent = msg;
-    fb.className = `p-3.5 rounded-2xl text-sm font-semibold text-center transition-all duration-300 ${styleClasses}`;
-    fb.classList.remove('hidden');
-  }
-
-  // Modal Handlers
-  window.openMultiplayerModal = function() {
-    document.getElementById('multiplayer-modal')?.classList.remove('hidden');
-  };
-
-  window.closeMultiplayerModal = function() {
-    document.getElementById('multiplayer-modal')?.classList.add('hidden');
-  };
-
-  window.openSettingsModal = function() {
-    document.getElementById('settings-modal')?.classList.remove('hidden');
-  };
-
-  window.closeSettingsModal = function() {
-    document.getElementById('settings-modal')?.classList.add('hidden');
-  };
-
-  window.setMatchFormat = function(formatType) {
-    state.format = formatType;
-    const btnSingle = document.getElementById('btn-format-single');
-    const btnPvp = document.getElementById('btn-format-pvp');
-    
-    if (formatType === 'pvp') {
-      btnPvp.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
-      btnSingle.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
-    } else {
-      btnSingle.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
-      btnPvp.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
-    }
-  };
-
-  window.setGameMode = function(modeName) {
-    state.mode = modeName;
-    const btnStandard = document.getElementById('btn-mode-standard');
-    const btnP5 = document.getElementById('btn-mode-p5');
-
-    if (modeName === 'p5_twist') {
-      btnP5.className = "py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-sm";
-      btnStandard.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
-    } else {
-      btnStandard.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
-      btnP5.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
-    }
-  };
-
-  window.applyOfflineSettings = function() {
-    const offlineTargetSelect = document.getElementById('offline-target-score-select');
-    if (offlineTargetSelect) {
-      state.winningTarget = parseInt(offlineTargetSelect.value, 10);
-    }
-    
-    // Update Target Value students must form
-    const customTargetInput = document.getElementById('input-target-val');
-    if (customTargetInput && customTargetInput.value) {
-      state.target = parseFloat(customTargetInput.value) || 24;
+    function showFeedback(msg, styleClasses) {
+      const fb = document.getElementById('feedback-message');
+      if (!fb) return;
+      fb.textContent = msg;
+      fb.className = `p-3.5 rounded-2xl text-sm font-semibold text-center transition-all duration-300 ${styleClasses}`;
+      fb.classList.remove('hidden');
     }
 
-    // Update Badges & Rule Description
-    const modeBadge = document.getElementById('badge-mode');
-    const pvpBadge = document.getElementById('badge-pvp');
-    const ruleDesc = document.getElementById('rule-description');
-    const pvpScoreboard = document.getElementById('pvp-scoreboard');
-    const singleWorkspace = document.getElementById('single-workspace');
-    const pvpWorkspace = document.getElementById('simultaneous-workspace');
+    // Modal Handlers
+    window.openMultiplayerModal = function() {
+      document.getElementById('multiplayer-modal')?.classList.remove('hidden');
+    };
 
-    if (modeBadge) {
-      modeBadge.textContent = state.mode === 'p5_twist' ? 'P5 Twist Mode' : 'Standard Mode';
-      modeBadge.className = state.mode === 'p5_twist' ? 
-        'px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-xs font-semibold' :
-        'px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-xs font-semibold';
-    }
+    window.closeMultiplayerModal = function() {
+      document.getElementById('multiplayer-modal')?.classList.add('hidden');
+    };
 
-    if (ruleDesc) {
-      ruleDesc.innerHTML = state.mode === 'p5_twist' ?
-        `Singapore P5 Edition: Fractional operations (+, -, &times;, &divide;) allowed to reach <span class="font-bold text-amber-700">${state.target}</span>!` :
-        `Combine 4 numbers using (+, -, &times;, &divide;) to reach <span class="font-bold text-amber-700">${state.target}</span>!`;
-    }
+    window.openSettingsModal = function() {
+      document.getElementById('settings-modal')?.classList.remove('hidden');
+    };
 
-    if (state.format === 'pvp') {
-      if (pvpBadge) {
-        pvpBadge.textContent = 'Simultaneous 1v1 Race';
-        pvpBadge.className = 'px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-xs font-semibold';
-      }
-      pvpScoreboard?.classList.remove('hidden');
-      singleWorkspace?.classList.add('hidden');
-      pvpWorkspace?.classList.remove('hidden');
-    } else {
-      if (pvpBadge) {
-        pvpBadge.textContent = 'Single Player Solo';
-        pvpBadge.className = 'px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300 text-xs font-semibold';
-      }
-      pvpScoreboard?.classList.add('hidden');
-      singleWorkspace?.classList.remove('hidden');
-      pvpWorkspace?.classList.add('hidden');
-    }
+    window.closeSettingsModal = function() {
+      document.getElementById('settings-modal')?.classList.add('hidden');
+    };
 
-    state.scores.p1 = 0;
-    state.scores.p2 = 0;
-    const p1Elem = document.getElementById('p1-score');
-    const p2Elem = document.getElementById('p2-score');
-    if (p1Elem) p1Elem.textContent = '0 pts';
-    if (p2Elem) p2Elem.textContent = '0 pts';
-
-    closeSettingsModal();
-    if (typeof window.generateSolvableCards === 'function') {
-      window.generateSolvableCards();
-    }
-  };
-
-  // Custom Practice Cards Handler
-  window.setCustomPracticeCards = function() {
-    const input = document.getElementById('input-custom-cards');
-    if (!input || !input.value.trim()) return;
-
-    const parsed = input.value.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
-    if (parsed.length === 4) {
-      state.cards = parsed;
-      state.usedCards = [];
-      state.p1UsedCards = [];
-      state.p2UsedCards = [];
-      state.expression = [];
-      state.p1Expression = [];
-      state.p2Expression = [];
-      updateDisplay();
-      renderCards();
-    } else {
-      alert("Please enter exactly 4 comma-separated numbers (e.g. 3, 8, 3, 1)");
-    }
-  };
-
-  // Leave Online Room Function
-  window.leaveOnlineRoom = function() {
-    if (unsubscribeRoom) {
-      unsubscribeRoom();
-      unsubscribeRoom = null;
-    }
-    currentRoomCode = null;
-    isHost = false;
-
-    document.getElementById('room-code-badge')?.classList.add('hidden');
-    document.getElementById('online-room-banner')?.classList.add('hidden');
-    document.getElementById('display-room-code').textContent = '----';
-
-    // Revert UI view back to default format setting
-    applyOfflineSettings();
-  };
-
-  // Host Online Room
-  window.hostOnlineRoom = async function() {
-    const targetSelect = document.getElementById('target-score-select');
-    const selectedTarget = targetSelect ? parseInt(targetSelect.value, 10) : 500;
-    
-    state.winningTarget = selectedTarget;
-    const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-    currentRoomCode = roomCode;
-    isHost = true;
-
-    try {
-      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomCode);
-      await setDoc(roomRef, {
-        host: 'player1',
-        winningTarget: selectedTarget,
-        p1Score: 0,
-        p2Score: 0,
-        status: 'waiting',
-        updatedAt: Date.now()
-      });
-
-      document.getElementById('display-room-code').textContent = roomCode;
-      document.getElementById('room-code-badge')?.classList.remove('hidden');
-      document.getElementById('online-room-banner')?.classList.remove('hidden');
+    window.setMatchFormat = function(formatType) {
+      state.format = formatType;
+      const btnSingle = document.getElementById('btn-format-single');
+      const btnPvp = document.getElementById('btn-format-pvp');
       
-      // Auto-enable 1v1 Race view for online rooms
-      setMatchFormat('pvp');
+      if (formatType === 'pvp') {
+        btnPvp.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
+        btnSingle.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+      } else {
+        btnSingle.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
+        btnPvp.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+      }
+    };
+
+    window.setGameMode = function(modeName) {
+      state.mode = modeName;
+      const btnStandard = document.getElementById('btn-mode-standard');
+      const btnP5 = document.getElementById('btn-mode-p5');
+
+      if (modeName === 'p5_twist') {
+        btnP5.className = "py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-sm";
+        btnStandard.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+      } else {
+        btnStandard.className = "py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-sm";
+        btnP5.className = "py-2.5 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs";
+      }
+    };
+
+    window.applyOfflineSettings = function() {
+      const offlineTargetSelect = document.getElementById('offline-target-score-select');
+      if (offlineTargetSelect) {
+        state.winningTarget = parseInt(offlineTargetSelect.value, 10);
+      }
+      
+      // Update Target Value students must form
+      const customTargetInput = document.getElementById('input-target-val');
+      if (customTargetInput && customTargetInput.value) {
+        state.target = parseFloat(customTargetInput.value) || 24;
+      }
+
+      // Update Badges & Rule Description
+      const modeBadge = document.getElementById('badge-mode');
+      const pvpBadge = document.getElementById('badge-pvp');
+      const ruleDesc = document.getElementById('rule-description');
+      const pvpScoreboard = document.getElementById('pvp-scoreboard');
+      const singleWorkspace = document.getElementById('single-workspace');
+      const pvpWorkspace = document.getElementById('simultaneous-workspace');
+
+      if (modeBadge) {
+        modeBadge.textContent = state.mode === 'p5_twist' ? 'P5 Twist Mode' : 'Standard Mode';
+        modeBadge.className = state.mode === 'p5_twist' ? 
+          'px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-300 text-xs font-semibold' :
+          'px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-xs font-semibold';
+      }
+
+      if (ruleDesc) {
+        ruleDesc.innerHTML = state.mode === 'p5_twist' ?
+          `Singapore P5 Edition: Fractional operations (+, -, &times;, &divide;) allowed to reach <span class="font-bold text-amber-700">${state.target}</span>!` :
+          `Combine 4 numbers using (+, -, &times;, &divide;) to reach <span class="font-bold text-amber-700">${state.target}</span>!`;
+      }
+
+      if (state.format === 'pvp') {
+        if (pvpBadge) {
+          pvpBadge.textContent = 'Simultaneous 1v1 Race';
+          pvpBadge.className = 'px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-300 text-xs font-semibold';
+        }
+        pvpScoreboard?.classList.remove('hidden');
+        singleWorkspace?.classList.add('hidden');
+        pvpWorkspace?.classList.remove('hidden');
+      } else {
+        if (pvpBadge) {
+          pvpBadge.textContent = 'Single Player Solo';
+          pvpBadge.className = 'px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300 text-xs font-semibold';
+        }
+        pvpScoreboard?.classList.add('hidden');
+        singleWorkspace?.classList.remove('hidden');
+        pvpWorkspace?.classList.add('hidden');
+      }
+
+      state.scores.p1 = 0;
+      state.scores.p2 = 0;
+      const p1Elem = document.getElementById('p1-score');
+      const p2Elem = document.getElementById('p2-score');
+      if (p1Elem) p1Elem.textContent = '0 pts';
+      if (p2Elem) p2Elem.textContent = '0 pts';
+
+      closeSettingsModal();
+      if (typeof window.generateSolvableCards === 'function') {
+        window.generateSolvableCards();
+      }
+    };
+
+    // Custom Practice Cards Handler
+    window.setCustomPracticeCards = function() {
+      const input = document.getElementById('input-custom-cards');
+      if (!input || !input.value.trim()) return;
+
+      const parsed = input.value.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+      if (parsed.length === 4) {
+        state.cards = parsed;
+        state.usedCards = [];
+        state.p1UsedCards = [];
+        state.p2UsedCards = [];
+        state.expression = [];
+        state.p1Expression = [];
+        state.p2Expression = [];
+        updateDisplay();
+        renderCards();
+      } else {
+        showFeedback("Please enter exactly 4 comma-separated numbers (e.g. 3, 8, 3, 1)", "bg-rose-100 text-rose-800 border border-rose-300");
+      }
+    };
+
+    // Leave Online Room Function
+    window.leaveOnlineRoom = function() {
+      if (unsubscribeRoom) {
+        unsubscribeRoom();
+        unsubscribeRoom = null;
+      }
+      currentRoomCode = null;
+      isHost = false;
+
+      document.getElementById('room-code-badge')?.classList.add('hidden');
+      document.getElementById('online-room-banner')?.classList.add('hidden');
+      document.getElementById('display-room-code').textContent = '----';
+
       applyOfflineSettings();
+    };
 
-      closeMultiplayerModal();
-      listenToRoom(roomCode);
+    // Host Online Room
+    window.hostOnlineRoom = async function() {
+      const targetSelect = document.getElementById('target-score-select');
+      const selectedTarget = targetSelect ? parseInt(targetSelect.value, 10) : 500;
+      
+      state.winningTarget = selectedTarget;
+      const roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+      currentRoomCode = roomCode;
+      isHost = true;
 
-    } catch (e) {
-      console.error("Error creating room:", e);
-      alert("Failed to create room: " + e.message);
-    }
-  };
+      try {
+        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomCode);
+        await setDoc(roomRef, {
+          host: 'player1',
+          winningTarget: selectedTarget,
+          p1Score: 0,
+          p2Score: 0,
+          status: 'waiting',
+          updatedAt: Date.now()
+        });
 
-  // Join Online Room
-  window.joinOnlineRoom = async function() {
-    const codeInput = document.getElementById('join-room-code-input');
-    const roomCode = codeInput ? codeInput.value.trim().toUpperCase() : '';
+        document.getElementById('display-room-code').textContent = roomCode;
+        document.getElementById('room-code-badge')?.classList.remove('hidden');
+        document.getElementById('online-room-banner')?.classList.remove('hidden');
+        
+        setMatchFormat('pvp');
+        applyOfflineSettings();
 
-    if (roomCode.length !== 4) {
-      alert("Please enter a valid 4-character room code.");
-      return;
-    }
+        closeMultiplayerModal();
+        listenToRoom(roomCode);
 
-    currentRoomCode = roomCode;
-    isHost = false;
+      } catch (e) {
+        console.error("Error creating room:", e);
+        showFeedback("Failed to create online room.", "bg-rose-100 text-rose-800 border border-rose-300");
+      }
+    };
 
-    try {
-      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomCode);
-      const snap = await getDoc(roomRef);
+    // Join Online Room
+    window.joinOnlineRoom = async function() {
+      const codeInput = document.getElementById('join-room-code-input');
+      const roomCode = codeInput ? codeInput.value.trim().toUpperCase() : '';
 
-      if (!snap.exists()) {
-        alert("Room code not found!");
+      if (roomCode.length !== 4) {
+        showFeedback("Please enter a valid 4-character room code.", "bg-rose-100 text-rose-800 border border-rose-300");
         return;
       }
 
-      await updateDoc(roomRef, {
-        status: 'active',
-        updatedAt: Date.now()
+      currentRoomCode = roomCode;
+      isHost = false;
+
+      try {
+        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomCode);
+        const snap = await getDoc(roomRef);
+
+        if (!snap.exists()) {
+          showFeedback("Room code not found!", "bg-rose-100 text-rose-800 border border-rose-300");
+          return;
+        }
+
+        await updateDoc(roomRef, {
+          status: 'active',
+          updatedAt: Date.now()
+        });
+
+        document.getElementById('display-room-code').textContent = roomCode;
+        document.getElementById('room-code-badge')?.classList.remove('hidden');
+        document.getElementById('online-room-banner')?.classList.remove('hidden');
+
+        setMatchFormat('pvp');
+        applyOfflineSettings();
+
+        closeMultiplayerModal();
+        listenToRoom(roomCode);
+
+      } catch (e) {
+        console.error("Error joining room:", e);
+        showFeedback("Failed to join room.", "bg-rose-100 text-rose-800 border border-rose-300");
+      }
+    };
+
+    // Realtime Sync & Winning Target Check
+    function listenToRoom(roomCode) {
+      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomCode);
+      if (unsubscribeRoom) unsubscribeRoom();
+
+      unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
+        if (!docSnap.exists()) return;
+        const data = docSnap.data();
+
+        if (data.winningTarget) {
+          state.winningTarget = data.winningTarget;
+        }
+
+        state.scores.p1 = data.p1Score || 0;
+        state.scores.p2 = data.p2Score || 0;
+
+        const p1Elem = document.getElementById('p1-score');
+        const p2Elem = document.getElementById('p2-score');
+        if (p1Elem) p1Elem.textContent = `${state.scores.p1} pts`;
+        if (p2Elem) p2Elem.textContent = `${state.scores.p2} pts`;
+
+        checkMatchWinner(state.scores.p1, state.scores.p2);
+      }, (error) => {
+        console.error("Room sync error:", error);
       });
-
-      document.getElementById('display-room-code').textContent = roomCode;
-      document.getElementById('room-code-badge')?.classList.remove('hidden');
-      document.getElementById('online-room-banner')?.classList.remove('hidden');
-
-      // Auto-enable 1v1 Race view for online rooms
-      setMatchFormat('pvp');
-      applyOfflineSettings();
-
-      closeMultiplayerModal();
-      listenToRoom(roomCode);
-
-    } catch (e) {
-      console.error("Error joining room:", e);
-      alert("Failed to join room: " + e.message);
     }
-  };
 
-  // Realtime Sync & Winning Target Check
-  function listenToRoom(roomCode) {
-    const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomCode);
-    if (unsubscribeRoom) unsubscribeRoom();
+    function checkMatchWinner(p1Score, p2Score) {
+      const target = state.winningTarget || 500;
+      if (p1Score >= target || p2Score >= target) {
+        const winnerName = p1Score >= target ? "Player 1" : "Player 2";
+        showVictoryModal(winnerName, p1Score, p2Score);
+      }
+    }
 
-    unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
-      if (!docSnap.exists()) return;
-      const data = docSnap.data();
+    function showVictoryModal(winnerName, p1Score, p2Score) {
+      document.getElementById('winner-title').textContent = `${winnerName} Wins! 🎉`;
+      document.getElementById('winner-subtext').textContent = `Reached the ${state.winningTarget}-point winning target!`;
+      document.getElementById('final-host-score').textContent = `${p1Score} pts`;
+      document.getElementById('final-guest-score').textContent = `${p2Score} pts`;
+      document.getElementById('game-over-modal')?.classList.remove('hidden');
+      if (typeof confetti === 'function') confetti();
+    }
 
-      if (data.winningTarget) {
-        state.winningTarget = data.winningTarget;
+    window.closeVictoryModal = function() {
+      document.getElementById('game-over-modal')?.classList.add('hidden');
+    };
+
+    // Toggle Collapsible Order of Operations Hint
+    window.togglePemdasHint = function() {
+      const body = document.getElementById('pemdas-hint-body');
+      const label = document.getElementById('pemdas-hint-label');
+      const chevron = document.getElementById('pemdas-hint-chevron');
+      if (!body) return;
+
+      const isHidden = body.classList.contains('hidden');
+      if (isHidden) {
+        body.classList.remove('hidden');
+        if (label) label.textContent = 'Hide Hint';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+      } else {
+        body.classList.add('hidden');
+        if (label) label.textContent = 'Show Hint';
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      }
+    };
+
+    // Card Rendering Engine
+    window.renderCards = function() {
+      const container = document.getElementById('cards-container');
+      const p1Buttons = document.getElementById('p1-card-buttons');
+      const p2Buttons = document.getElementById('p2-card-buttons');
+
+      if (container) {
+        container.innerHTML = state.cards.map((val, idx) => `
+          <div onclick="selectCard(${idx})" class="playing-card h-36 rounded-2xl flex flex-col items-center justify-center border-2 cursor-pointer ${state.usedCards.includes(idx) ? 'used' : ''}">
+            <span class="text-4xl font-black">${val}</span>
+          </div>
+        `).join('');
       }
 
-      state.scores.p1 = data.p1Score || 0;
-      state.scores.p2 = data.p2Score || 0;
+      if (p1Buttons) {
+        p1Buttons.innerHTML = state.cards.map((val, idx) => `
+          <button onclick="selectPvPCard(1, ${idx})" class="py-2 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-sm border border-rose-300 ${state.p1UsedCards.includes(idx) ? 'opacity-40 pointer-events-none' : ''}">${val}</button>
+        `).join('');
+      }
 
-      const p1Elem = document.getElementById('p1-score');
-      const p2Elem = document.getElementById('p2-score');
-      if (p1Elem) p1Elem.textContent = `${state.scores.p1} pts`;
-      if (p2Elem) p2Elem.textContent = `${state.scores.p2} pts`;
+      if (p2Buttons) {
+        p2Buttons.innerHTML = state.cards.map((val, idx) => `
+          <button onclick="selectPvPCard(2, ${idx})" class="py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-sm border border-blue-300 ${state.p2UsedCards.includes(idx) ? 'opacity-40 pointer-events-none' : ''}">${val}</button>
+        `).join('');
+      }
+    };
 
-      checkMatchWinner(state.scores.p1, state.scores.p2);
-    });
-  }
+    window.selectCard = function(index) {
+      if (state.usedCards.includes(index)) return;
+      state.usedCards.push(index);
+      state.expression.push(state.cards[index]);
+      updateDisplay();
+      renderCards();
+    };
 
-  function checkMatchWinner(p1Score, p2Score) {
-    const target = state.winningTarget || 500;
-    if (p1Score >= target || p2Score >= target) {
-      const winnerName = p1Score >= target ? "Player 1" : "Player 2";
-      showVictoryModal(winnerName, p1Score, p2Score);
-    }
-  }
+    window.selectPvPCard = function(player, index) {
+      if (player === 1) {
+        if (state.p1UsedCards.includes(index)) return;
+        state.p1UsedCards.push(index);
+        state.p1Expression.push(state.cards[index]);
+      } else {
+        if (state.p2UsedCards.includes(index)) return;
+        state.p2UsedCards.push(index);
+        state.p2Expression.push(state.cards[index]);
+      }
+      updateDisplay();
+      renderCards();
+    };
 
-  function showVictoryModal(winnerName, p1Score, p2Score) {
-    document.getElementById('winner-title').textContent = `${winnerName} Wins! 🎉`;
-    document.getElementById('winner-subtext').textContent = `Reached the ${state.winningTarget}-point winning target!`;
-    document.getElementById('final-host-score').textContent = `${p1Score} pts`;
-    document.getElementById('final-guest-score').textContent = `${p2Score} pts`;
-    document.getElementById('game-over-modal')?.classList.remove('hidden');
-  }
+    function updateDisplay() {
+      const expElem = document.getElementById('expression-display');
+      const exp1Elem = document.getElementById('expression-display-p1');
+      const exp2Elem = document.getElementById('expression-display-p2');
 
-  window.closeVictoryModal = function() {
-    document.getElementById('game-over-modal')?.classList.add('hidden');
-  };
-
-  // Toggle Collapsible Order of Operations Hint (Exported to Window)
-  window.togglePemdasHint = function() {
-    const body = document.getElementById('pemdas-hint-body');
-    const label = document.getElementById('pemdas-hint-label');
-    const chevron = document.getElementById('pemdas-hint-chevron');
-    if (!body) return;
-
-    const isHidden = body.classList.contains('hidden');
-    if (isHidden) {
-      body.classList.remove('hidden');
-      if (label) label.textContent = 'Hide Hint';
-      if (chevron) chevron.style.transform = 'rotate(180deg)';
-    } else {
-      body.classList.add('hidden');
-      if (label) label.textContent = 'Show Hint';
-      if (chevron) chevron.style.transform = 'rotate(0deg)';
-    }
-  };
-
-  // Card Rendering Engine
-  window.renderCards = function() {
-    const container = document.getElementById('cards-container');
-    const p1Buttons = document.getElementById('p1-card-buttons');
-    const p2Buttons = document.getElementById('p2-card-buttons');
-
-    if (container) {
-      container.innerHTML = state.cards.map((val, idx) => `
-        <div onclick="selectCard(${idx})" class="playing-card h-36 rounded-2xl flex flex-col items-center justify-center border-2 cursor-pointer ${state.usedCards.includes(idx) ? 'used' : ''}">
-          <span class="text-4xl font-black">${val}</span>
-        </div>
-      `).join('');
+      if (expElem) expElem.textContent = state.expression.join(' ') || 'Select card & operation to build equation...';
+      if (exp1Elem) exp1Elem.textContent = state.p1Expression.join(' ') || 'Build P1 equation...';
+      if (exp2Elem) exp2Elem.textContent = state.p2Expression.join(' ') || 'Build P2 equation...';
     }
 
-    if (p1Buttons) {
-      p1Buttons.innerHTML = state.cards.map((val, idx) => `
-        <button onclick="selectPvPCard(1, ${idx})" class="py-2 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 font-bold text-sm border border-rose-300 ${state.p1UsedCards.includes(idx) ? 'opacity-40 pointer-events-none' : ''}">${val}</button>
-      `).join('');
+    // Evaluate Math Expression Safely
+    function evaluateExpression(exprArray, usedCardIndices) {
+      if (usedCardIndices.length !== 4) {
+        return { valid: false, reason: "You must use all 4 cards in your equation!" };
+      }
+
+      const exprString = exprArray.join('');
+      try {
+        // Sanitize math string
+        const cleanExpr = exprString.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+        const result = Function(`'use strict'; return (${cleanExpr})`)();
+
+        if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+          if (Math.abs(result - state.target) < 0.0001) {
+            return { valid: true, value: result };
+          } else {
+            return { valid: false, reason: `Equation equals ${result}, but target is ${state.target}.` };
+          }
+        } else {
+          return { valid: false, reason: "Invalid mathematical expression." };
+        }
+      } catch (e) {
+        return { valid: false, reason: "Check your equation syntax (e.g., matching parentheses)." };
+      }
     }
 
-    if (p2Buttons) {
-      p2Buttons.innerHTML = state.cards.map((val, idx) => `
-        <button onclick="selectPvPCard(2, ${idx})" class="py-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-sm border border-blue-300 ${state.p2UsedCards.includes(idx) ? 'opacity-40 pointer-events-none' : ''}">${val}</button>
-      `).join('');
-    }
-  };
+    window.submitSingleSolution = function() {
+      const res = evaluateExpression(state.expression, state.usedCards);
+      if (res.valid) {
+        showFeedback(`🎉 Perfect! Correct solution for target ${state.target}!`, "bg-emerald-100 text-emerald-800 border border-emerald-300");
+        if (typeof confetti === 'function') confetti();
+        setTimeout(window.generateSolvableCards, 1500);
+      } else {
+        showFeedback(`❌ ${res.reason}`, "bg-rose-100 text-rose-800 border border-rose-300");
+      }
+    };
 
-  window.selectCard = function(index) {
-    if (state.usedCards.includes(index)) return;
-    state.usedCards.push(index);
-    state.expression.push(state.cards[index]);
-    updateDisplay();
-    renderCards();
-  };
+    window.submitPvPSolution = async function(player) {
+      const expr = player === 1 ? state.p1Expression : state.p2Expression;
+      const used = player === 1 ? state.p1UsedCards : state.p2UsedCards;
+      const res = evaluateExpression(expr, used);
 
-  window.selectPvPCard = function(player, index) {
-    if (player === 1) {
-      if (state.p1UsedCards.includes(index)) return;
-      state.p1UsedCards.push(index);
-      state.p1Expression.push(state.cards[index]);
-    } else {
-      if (state.p2UsedCards.includes(index)) return;
-      state.p2UsedCards.push(index);
-      state.p2Expression.push(state.cards[index]);
-    }
-    updateDisplay();
-    renderCards();
-  };
+      if (res.valid) {
+        if (player === 1) state.scores.p1 += 100;
+        else state.scores.p2 += 100;
 
-  function updateDisplay() {
-    const expElem = document.getElementById('expression-display');
-    const exp1Elem = document.getElementById('expression-display-p1');
-    const exp2Elem = document.getElementById('expression-display-p2');
+        const p1Elem = document.getElementById('p1-score');
+        const p2Elem = document.getElementById('p2-score');
+        if (p1Elem) p1Elem.textContent = `${state.scores.p1} pts`;
+        if (p2Elem) p2Elem.textContent = `${state.scores.p2} pts`;
 
-    if (expElem) expElem.textContent = state.expression.join(' ') || 'Select card & operation to build equation...';
-    if (exp1Elem) exp1Elem.textContent = state.p1Expression.join(' ') || 'Build P1 equation...';
-    if (exp2Elem) exp2Elem.textContent = state.p2Expression.join(' ') || 'Build P2 equation...';
-  }
+        showFeedback(`🏆 Player ${player} scored +100 pts!`, "bg-emerald-100 text-emerald-800 border border-emerald-300");
+        if (typeof confetti === 'function') confetti();
 
-  window.generateSolvableCards = function() {
-    const sampleSets = [
-      [6, 4, 3, 2], [8, 3, 3, 1], [7, 5, 2, 1],
-      [9, 4, 2, 1], [5, 5, 5, 1], [8, 8, 4, 1]
-    ];
-    state.cards = [...sampleSets[Math.floor(Math.random() * sampleSets.length)]];
-    state.usedCards = [];
-    state.p1UsedCards = [];
-    state.p2UsedCards = [];
-    state.expression = [];
-    state.p1Expression = [];
-    state.p2Expression = [];
-    updateDisplay();
-    renderCards();
-    startTimer(60); // Reset timer on deal
-  };
+        // Sync score online if in room
+        if (currentRoomCode) {
+          try {
+            const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode);
+            await updateDoc(roomRef, {
+              p1Score: state.scores.p1,
+              p2Score: state.scores.p2,
+              updatedAt: Date.now()
+            });
+          } catch (e) {
+            console.error("Score sync error:", e);
+          }
+        }
 
-  window.onload = function() {
-    renderCards();firebase
-    startTimer(60); // Start round timer on load
-    document.getElementById('btn-new-deal')?.addEventListener('click', generateSolvableCards);
+        checkMatchWinner(state.scores.p1, state.scores.p2);
+        setTimeout(window.generateSolvableCards, 1500);
+      } else {
+        showFeedback(`❌ Player ${player}: ${res.reason}`, "bg-rose-100 text-rose-800 border border-rose-300");
+      }
+    };
 
-    document.getElementById('btn-clear')?.addEventListener('click', () => {
+    window.generateSolvableCards = function() {
+      const sampleSets = [
+        [6, 4, 3, 2], [8, 3, 3, 1], [7, 5, 2, 1],
+        [9, 4, 2, 1], [5, 5, 5, 1], [8, 8, 4, 1]
+      ];
+      state.cards = [...sampleSets[Math.floor(Math.random() * sampleSets.length)]];
       state.usedCards = [];
-      state.expression = [];
-      updateDisplay();
-      renderCards();
-    });
-
-    document.getElementById('btn-clear-p1')?.addEventListener('click', () => {
       state.p1UsedCards = [];
-      state.p1Expression = [];
-      updateDisplay();
-      renderCards();
-    });
-
-    document.getElementById('btn-clear-p2')?.addEventListener('click', () => {
       state.p2UsedCards = [];
+      state.expression = [];
+      state.p1Expression = [];
       state.p2Expression = [];
       updateDisplay();
       renderCards();
-    });
+    };
 
-    document.querySelectorAll('.op-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        state.expression.push(e.target.dataset.op);
-        updateDisplay();
-      });
-    });
+    window.onload = function() {
+      renderCards();
+      document.getElementById('btn-new-deal')?.addEventListener('click', window.generateSolvableCards);
 
-    document.querySelectorAll('.op-btn-pvp').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const p = e.target.dataset.p;
-        const op = e.target.dataset.op;
-        if (p === "1") state.p1Expression.push(op);
-        else state.p2Expression.push(op);
+      document.getElementById('btn-clear')?.addEventListener('click', () => {
+        state.usedCards = [];
+        state.expression = [];
         updateDisplay();
+        renderCards();
       });
-    });
-  };
-</script>
+
+      document.getElementById('btn-backspace')?.addEventListener('click', () => {
+        if (state.expression.length > 0) {
+          const popped = state.expression.pop();
+          if (typeof popped === 'number') {
+            state.usedCards.pop();
+          }
+          updateDisplay();
+          renderCards();
+        }
+      });
+
+      document.getElementById('btn-clear-p1')?.addEventListener('click', () => {
+        state.p1UsedCards = [];
+        state.p1Expression = [];
+        updateDisplay();
+        renderCards();
+      });
+
+      document.getElementById('btn-backspace-p1')?.addEventListener('click', () => {
+        if (state.p1Expression.length > 0) {
+          const popped = state.p1Expression.pop();
+          if (typeof popped === 'number') {
+            state.p1UsedCards.pop();
+          }
+          updateDisplay();
+          renderCards();
+        }
+      });
+
+      document.getElementById('btn-clear-p2')?.addEventListener('click', () => {
+        state.p2UsedCards = [];
+        state.p2Expression = [];
+        updateDisplay();
+        renderCards();
+      });
+
+      document.getElementById('btn-backspace-p2')?.addEventListener('click', () => {
+        if (state.p2Expression.length > 0) {
+          const popped = state.p2Expression.pop();
+          if (typeof popped === 'number') {
+            state.p2UsedCards.pop();
+          }
+          updateDisplay();
+          renderCards();
+        }
+      });
+
+      document.querySelectorAll('.op-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          state.expression.push(e.target.dataset.op);
+          updateDisplay();
+        });
+      });
+
+      document.querySelectorAll('.op-btn-pvp').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const p = e.target.dataset.p;
+          const op = e.target.dataset.op;
+          if (p === "1") state.p1Expression.push(op);
+          else state.p2Expression.push(op);
+          updateDisplay();
+        });
+      });
+    };
+  </script>
 </body>
 </html>
