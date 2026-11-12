@@ -809,16 +809,7 @@
       exprText.textContent = displayStr;
 
       const rawStr = window.state.tokens.map(t => t.value).join('');
-      try {
-        const result = math.evaluate(rawStr);
-        if (typeof result === 'number' && isFinite(result)) {
-          const rounded = Math.round(result * 1000) / 1000;
-          liveEval.textContent = `= ${rounded}`;
-        } else {
-          liveEval.textContent = '?';
-        }
-      } catch {
-        liveEval.textContent = '?';
+       liveEval.textContent = '?';Eval.textContent = '?';
       }
     }
 
