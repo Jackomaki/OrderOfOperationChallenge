@@ -384,7 +384,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // App ID & Firebase Initialization
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'order-of-ops-app';
@@ -397,9 +397,11 @@
   appId: "1:474125587176:web:c09e9c2b4f13ae44736f5d",
   measurementId: "G-5L16QEXNMC"
 };
+
     let db = null;
     let auth = null;
     let userId = 'user-' + Math.random().toString(36).substring(2, 7);
+    let authReadyPromise = Promise.resolve();
 
     if (firebaseConfig) {
       const app = initializeApp(firebaseConfig);
@@ -407,24 +409,42 @@
       auth = getAuth(app);
 
       const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-      if (token) {
-        signInWithCustomToken(auth, token).then(cred => { userId = cred.user.uid; document.getElementById('display-user-id').textContent = userId.substring(0,6); });
-      } else {
-        signInAnonymously(auth).then(cred => { userId = cred.user.uid; document.getElementById('display-user-id').textContent = userId.substring(0,6); });
-      }
+      authReadyPromise = (token ? signInWithCustomToken(auth, token) : signInAnonymously(auth))
+        .then(cred => {
+          userId = cred.user.uid;
+          const uidEl = document.getElementById('display-user-id');
+          if (uidEl) uidEl.textContent = userId.substring(0, 6);
+        })
+        .catch(err => {
+          console.error("Firebase Auth failed:", err);
+          showToast("Auth error: Check Anonymous Sign-in in Firebase Console.");
+        });
     }
+
+    // Modal Toggle Helper
+    window.toggleModal = function(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.toggle('hidden');
+    };
 
     // Expose Firebase functions globally
     let roomUnsubscribe = null;
 
     window.createRoom = async function() {
-      if (!db) { showToast("Cloud multiplayer is not connected in offline mode."); return; }
+      if (!db) { showToast("Add your firebaseConfig in index.html first!"); return; }
+      await authReadyPromise;
+      if (!auth?.currentUser) { showToast("Not signed in to Firebase."); return; }
+
       const code = Math.random().toString(36).substring(2, 6).toUpperCase();
       window.state.roomCode = code;
+      window.state.isHost = true;
+
       try {
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code), {
           format: window.state.format,
           target: window.state.target,
+          cards: window.state.cards,
+          roundId: Date.now(),
           players: {
             [userId]: { name: 'Host (' + userId.substring(0, 4) + ')', score: window.state.score, solved: window.state.solved, team: window.state.team }
           }
@@ -433,21 +453,34 @@
         document.getElementById('display-room-code').textContent = code;
         document.getElementById('online-room-bar').classList.remove('hidden');
         window.toggleModal('modal-online-room');
-        showToast(`Room ${code} created!`);
+        showToast(`Room ${code} created! Share this code.`);
       } catch (e) {
-        console.error(e);
-        showToast("Failed to create room.");
+        console.error("Create room error:", e);
+        showToast("Error creating room: Check Firestore rules.");
       }
     };
 
     window.joinRoom = async function() {
-      if (!db) { showToast("Cloud multiplayer is not connected in offline mode."); return; }
+      if (!db) { showToast("Add your firebaseConfig in index.html first!"); return; }
+      await authReadyPromise;
+      if (!auth?.currentUser) { showToast("Not signed in to Firebase."); return; }
+
       const input = document.getElementById('input-room-code');
       const code = (input ? input.value : '').trim().toUpperCase();
       if (code.length !== 4) { showToast("Enter a valid 4-letter room code."); return; }
-      window.state.roomCode = code;
+
       try {
-        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code), {
+        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
+        const snap = await getDoc(roomRef);
+        if (!snap.exists()) {
+          showToast(`Room ${code} does not exist!`);
+          return;
+        }
+
+        window.state.roomCode = code;
+        window.state.isHost = false;
+
+        await updateDoc(roomRef, {
           [`players.${userId}`]: { name: 'Player (' + userId.substring(0, 4) + ')', score: window.state.score, solved: window.state.solved, team: window.state.team }
         });
         subscribeToRoom(code);
@@ -456,42 +489,82 @@
         window.toggleModal('modal-online-room');
         showToast(`Joined room ${code}!`);
       } catch (e) {
-        console.error(e);
-        showToast("Room not found or could not join.");
+        console.error("Join room error:", e);
+        showToast("Could not join room: Check Firestore rules.");
       }
     };
 
     function subscribeToRoom(code) {
       if (roomUnsubscribe) roomUnsubscribe();
-      roomUnsubscribe = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code), (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.data();
-        window.state.roomPlayers = data.players || {};
-        if (data.format) window.state.format = data.format;
-        renderDynamicScoreboard();
-      });
+      roomUnsubscribe = onSnapshot(
+        doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code),
+        (snap) => {
+          if (!snap.exists()) return;
+          const data = snap.data();
+          window.state.roomPlayers = data.players || {};
+
+          if (data.format && data.format !== window.state.format) {
+            window.state.format = data.format;
+            document.getElementById('display-room-mode-text').textContent = data.format.toUpperCase();
+          }
+
+          if (typeof data.target === 'number' && data.target !== window.state.target) {
+            window.state.target = data.target;
+            document.getElementById('target-number-display').textContent = data.target;
+          }
+
+          // Sync shared cards across all connected players when a new round is dealt
+          if (Array.isArray(data.cards) && data.cards.length === 4 && data.roundId && data.roundId !== window.state.lastRoundId) {
+            window.state.lastRoundId = data.roundId;
+            window.state.cards = [...data.cards];
+            window.state.used = [false, false, false, false];
+            window.state.tokens = [];
+            renderCards();
+            renderExpression();
+          }
+
+          renderDynamicScoreboard();
+        },
+        (error) => {
+          console.error("Room listener error:", error);
+          showToast("Live sync disconnected.");
+        }
+      );
     }
 
     window.leaveOnlineRoom = function() {
       if (roomUnsubscribe) { roomUnsubscribe(); roomUnsubscribe = null; }
       window.state.roomCode = null;
       window.state.roomPlayers = {};
+      window.state.lastRoundId = null;
       document.getElementById('online-room-bar').classList.add('hidden');
       renderDynamicScoreboard();
       showToast("Left online room.");
     };
 
-    window.syncScoreToCloud = async function(score, solved) {
-      if (!db || !window.state.roomCode) return;
+    window.syncRoomState = async function(updates) {
+      if (!db || !window.state.roomCode || !auth?.currentUser) return;
       try {
-        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', window.state.roomCode), {
-          [`players.${userId}.score`]: score,
-          [`players.${userId}.solved`]: solved,
-          [`players.${userId}.team`]: window.state.team
-        });
+        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', window.state.roomCode), updates);
       } catch (e) {
-        console.warn("Score sync skipped:", e);
+        console.warn("Room sync skipped:", e);
       }
+    };
+
+    window.syncScoreToCloud = async function(score, solved, newCards = null) {
+      const updates = {
+        [`players.${userId}.score`]: score,
+        [`players.${userId}.solved`]: solved,
+        [`players.${userId}.team`]: window.state.team,
+        target: window.state.target
+      };
+      if (newCards) {
+        const roundId = Date.now();
+        window.state.lastRoundId = roundId;
+        updates.cards = newCards;
+        updates.roundId = roundId;
+      }
+      await window.syncRoomState(updates);
     };
 
     // Local Game State & Logic
@@ -505,6 +578,7 @@
       sequenceStep: 0,
       roomCode: null,
       roomPlayers: {},
+      lastRoundId: null,
 
       score: 0,
       solved: 0,
@@ -671,34 +745,6 @@
       return false;
     }
 
-    window.dealNewCards = function() {
-      playSound('click');
-      const maxVal = window.state.deckMax;
-      const target = window.state.target;
-      let cards = [];
-      let attempts = 0;
-
-      // Attempt to generate a solvable 4-card hand
-      while (attempts < 600) {
-        cards = Array.from({ length: 4 }, () => Math.floor(Math.random() * maxVal) + 1);
-        if (canReachTarget(cards, target)) break;
-        attempts++;
-      }
-
-      // Fallback guaranteed solvable set for target 24 if random search hits limit
-      if (attempts >= 600 && target === 24) {
-        const fallbacks = [[6, 4, 3, 2], [8, 3, 2, 1], [6, 6, 6, 6], [9, 8, 3, 1], [12, 4, 2, 1]];
-        cards = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-      }
-
-      window.state.cards = cards;
-      window.state.used = [false, false, false, false];
-      window.state.tokens = [];
-
-      renderCards();
-      renderExpression();
-    };
-
     function renderCards() {
       const container = document.getElementById('unified-card-deck');
       if (!container) return;
@@ -707,16 +753,15 @@
         const isUsed = window.state.used[idx];
         return `
           <button
-            id="card-btn-${idx}"
             onclick="selectCard(${idx})"
             ${isUsed ? 'disabled' : ''}
-            class="card-anim relative aspect-[3/4] sm:aspect-square rounded-2xl border-2 flex flex-col items-center justify-center shadow-lg select-none
+            class="card-anim h-24 sm:h-28 rounded-2xl border-2 flex flex-col items-center justify-center font-black text-3xl sm:text-4xl shadow-md select-none
               ${isUsed
-                ? 'bg-slate-400/20 border-slate-400/30 text-slate-400 opacity-40 cursor-not-allowed card-flipping'
-                : 'bg-gradient-to-br from-indigo-500 to-purple-600 border-indigo-300/40 text-white cursor-pointer hover:shadow-indigo-500/30'}"
+                ? 'opacity-35 scale-95 bg-slate-800/60 border-slate-700 text-slate-500 cursor-not-allowed'
+                : 'bg-gradient-to-br from-indigo-500 to-purple-600 border-indigo-300/40 text-white hover:shadow-indigo-500/30 cursor-pointer'}"
           >
-            <span class="absolute top-2 left-2.5 text-[10px] font-black opacity-60">#${idx + 1}</span>
-            <span class="text-3xl sm:text-4xl font-black tracking-tight">${num}</span>
+            <span>${num}</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest opacity-70 mt-1">${isUsed ? 'Used' : 'Card ' + (idx + 1)}</span>
           </button>
         `;
       }).join('');
@@ -726,7 +771,7 @@
       if (window.state.used[idx]) return;
       playSound('click');
       window.state.used[idx] = true;
-      window.state.tokens.push({ type: 'card', value: window.state.cards[idx], cardIdx: idx });
+      window.state.tokens.push({ type: 'card', index: idx, value: String(window.state.cards[idx]) });
       renderCards();
       renderExpression();
     };
@@ -758,62 +803,80 @@
       }
 
       exprText.classList.remove('opacity-40');
-
-      // Format display with clean × and ÷ symbols
-      const displayStr = window.state.tokens.map(t => {
-        if (t.value === '*') return '×';
-        if (t.value === '/') return '÷';
-        if (t.value === '-') return '−';
-        return t.value;
-      }).join(' ');
-
+      const displayStr = window.state.tokens
+        .map(t => t.value.replace(/\*/g, '×').replace(/\//g, '÷').replace(/-/g, '−'))
+        .join(' ');
       exprText.textContent = displayStr;
 
-      // Evaluate raw expression safely
-      const rawExpr = window.state.tokens.map(t => t.value).join(' ');
+      const rawStr = window.state.tokens.map(t => t.value).join('');
       try {
-        const result = math.evaluate(rawExpr);
+        const result = math.evaluate(rawStr);
         if (typeof result === 'number' && isFinite(result)) {
           const rounded = Math.round(result * 1000) / 1000;
           liveEval.textContent = `= ${rounded}`;
         } else {
           liveEval.textContent = '?';
         }
-      } catch (e) {
-        liveEval.textContent = '...';
+      } catch {
+        liveEval.textContent = '?';
       }
     }
 
     function validateSolution(tokens, used) {
       if (!used.every(Boolean)) {
-        return { valid: false, msg: 'You must use all 4 playing cards!' };
+        return { valid: false, msg: 'You must use all 4 cards!' };
       }
       if (tokens.length === 0) {
         return { valid: false, msg: 'Build an equation first!' };
       }
-
-      const rawExpr = tokens.map(t => t.value).join(' ');
+      const rawStr = tokens.map(t => t.value).join('');
       try {
-        const result = math.evaluate(rawExpr);
-        if (typeof result !== 'number' || !isFinite(result)) {
+        const val = math.evaluate(rawStr);
+        if (typeof val !== 'number' || !isFinite(val)) {
           return { valid: false, msg: 'Invalid mathematical expression.' };
         }
-        if (Math.abs(result - window.state.target) < 1e-6) {
+        if (Math.abs(val - window.state.target) < 1e-6) {
           return { valid: true };
-        } else {
-          const rounded = Math.round(result * 100) / 100;
-          return { valid: false, msg: `Equals ${rounded}, but target is ${window.state.target}!` };
         }
-      } catch (e) {
-        return { valid: false, msg: 'Check your parentheses or operators!' };
+        const rounded = Math.round(val * 1000) / 1000;
+        return { valid: false, msg: `Your equation equals ${rounded}, not ${window.state.target}!` };
+      } catch {
+        return { valid: false, msg: 'Check your brackets and operators—syntax error!' };
       }
     }
 
-    // Global Modal Toggle Helper
-    window.toggleModal = function(modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        modal.classList.toggle('hidden');
+    window.dealNewCards = function() {
+      playSound('click');
+      const maxVal = window.state.deckMax;
+      const target = window.state.target;
+      let cards = [];
+      let attempts = 0;
+
+      // Attempt to generate a solvable 4-card hand
+      while (attempts < 600) {
+        cards = Array.from({ length: 4 }, () => Math.floor(Math.random() * maxVal) + 1);
+        if (canReachTarget(cards, target)) break;
+        attempts++;
+      }
+
+      // Fallback guaranteed solvable set for target 24 if random search hits limit
+      if (attempts >= 600 && target === 24) {
+        const fallbacks = [[6, 4, 3, 2], [8, 3, 2, 1], [6, 6, 6, 6], [9, 8, 3, 1], [12, 4, 2, 1]];
+        cards = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      }
+
+      window.state.cards = cards;
+      window.state.used = [false, false, false, false];
+      window.state.tokens = [];
+
+      renderCards();
+      renderExpression();
+
+      // Broadcast newly dealt cards to the room if online
+      if (window.state.roomCode && window.syncRoomState) {
+        const roundId = Date.now();
+        window.state.lastRoundId = roundId;
+        window.syncRoomState({ cards, target: window.state.target, roundId });
       }
     };
 
@@ -825,6 +888,9 @@
       document.getElementById('team-btn-blue').className = t === 'blue' 
         ? 'py-2.5 rounded-xl border border-blue-500 bg-blue-600 text-white font-extrabold text-xs' 
         : 'py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-extrabold text-xs';
+      if (window.state.roomCode && window.syncRoomState) {
+        window.syncRoomState({ [`players.${userId}.team`]: t });
+      }
     };
 
     window.setRoomFormat = function(fmt) {
@@ -842,6 +908,9 @@
       else teamBox.classList.add('hidden');
       
       document.getElementById('display-room-mode-text').textContent = fmt.toUpperCase();
+      if (window.state.roomCode && window.syncRoomState) {
+        window.syncRoomState({ format: fmt });
+      }
       renderDynamicScoreboard();
     };
 
@@ -849,23 +918,47 @@
       const container = document.getElementById('dynamic-scoreboard');
       if (!container) return;
 
+      const playerEntries = Object.entries(window.state.roomPlayers);
+
       if (window.state.format === '2v2') {
         let redTotal = 0, blueTotal = 0;
-        Object.values(window.state.roomPlayers).forEach(p => {
-          if (p.team === 'red') redTotal += (p.score || 0);
-          if (p.team === 'blue') blueTotal += (p.score || 0);
-        });
+        let redNames = [], blueNames = [];
+        if (playerEntries.length > 0) {
+          playerEntries.forEach(([id, p]) => {
+            const label = id === userId ? 'You' : (p.name || id.substring(0, 6));
+            if (p.team === 'red') { redTotal += (p.score || 0); redNames.push(label); }
+            if (p.team === 'blue') { blueTotal += (p.score || 0); blueNames.push(label); }
+          });
+        } else {
+          if (window.state.team === 'red') { redTotal = window.state.score; redNames.push('You'); }
+          else { blueTotal = window.state.score; blueNames.push('You'); }
+        }
 
         container.innerHTML = `
           <div class="theme-panel p-4 rounded-2xl border border-rose-500/40 bg-rose-500/10">
             <div class="text-xs font-bold uppercase text-rose-500">Team Red</div>
             <div class="text-2xl font-black text-rose-500">${redTotal} pts</div>
+            <div class="text-[11px] theme-text-sub mt-1">${redNames.length ? redNames.join(', ') : 'Waiting for players...'}</div>
           </div>
           <div class="theme-panel p-4 rounded-2xl border border-blue-500/40 bg-blue-500/10">
             <div class="text-xs font-bold uppercase text-blue-500">Team Blue</div>
             <div class="text-2xl font-black text-blue-500">${blueTotal} pts</div>
+            <div class="text-[11px] theme-text-sub mt-1">${blueNames.length ? blueNames.join(', ') : 'Waiting for players...'}</div>
           </div>
         `;
+      } else if (window.state.roomCode && playerEntries.length > 0) {
+        container.innerHTML = playerEntries.map(([id, p]) => {
+          const isMe = id === userId;
+          return `
+            <div class="theme-panel p-4 rounded-2xl border ${isMe ? 'border-indigo-500 bg-indigo-500/10' : ''}">
+              <div class="text-xs font-bold uppercase ${isMe ? 'text-indigo-400' : 'theme-text-sub'}">
+                ${isMe ? 'You (' + id.substring(0, 4) + ')' : (p.name || 'Player ' + id.substring(0, 4))}
+              </div>
+              <div class="text-2xl font-black ${isMe ? 'text-indigo-400' : 'theme-text-main'}">${p.score || 0} pts</div>
+              <div class="text-[10px] theme-text-sub mt-1">Solved: ${p.solved || 0}</div>
+            </div>
+          `;
+        }).join('');
       } else {
         container.innerHTML = `
           <div class="theme-panel p-4 rounded-2xl border">
@@ -897,8 +990,8 @@
         }
 
         renderDynamicScoreboard();
-        if (window.syncScoreToCloud) window.syncScoreToCloud(window.state.score, window.state.solved);
         dealNewCards();
+        if (window.syncScoreToCloud) window.syncScoreToCloud(window.state.score, window.state.solved, window.state.cards);
       } else {
         playSound('wrong');
         showToast(res.msg);
